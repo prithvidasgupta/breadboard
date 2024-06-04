@@ -69,7 +69,7 @@ breadboardComm.connectionBroken = function(workbenchController, component, hole)
 
 breadboardComm.probeAdded = function(workbenchController, meter, color, location) {
   workbenchController.workbench.meter.setProbeLocation("probe_"+color, location);
-  sound.play(sound.click)
+  sound.playSound(sound.click)
   logController.addEvent(LogEvent.ATTACHED_PROBE, {
     "color": color,
     "location": location

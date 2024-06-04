@@ -1,60 +1,56 @@
-/*global sparks getBreadBoard breadModel */
-/* FILE oscilloscope.js */
+let LogEvent = require('./log'),
+  logController = require('../controllers/log-controller');
 
-var LogEvent      = require('./log'),
-    logController = require('../controllers/log-controller');
+class Oscilloscope {
+  N_CHANNELS = 2;
+  PROBE_CHANNEL = [1, 2];
 
-Oscilloscope = function (breadboardController) {
-  this.breadboardController = breadboardController;
-  this.probeLocation = [];
-  this.probeLocation[0] = null;     // pink probe
-  this.probeLocation[1] = null;     // yellow probe
-  this.view = null;
-  this.signals = [];
-  var initVerticalScale   = this.INITIAL_VERTICAL_SCALE,
-      initHorizontalScale = this.INITIAL_HORIZONTAL_SCALE;
-  this._verticalScale = [initVerticalScale, initVerticalScale, initVerticalScale];
-  this._horizontalScale = initHorizontalScale;
-  this.showAminusB = false;
-  this.showAplusB = false;
-  this.AminusBwasOn = false;  // whether A-B was turned on during current question
-  this.AplusBwasOn = false;
-};
+  HORIZONTAL_SCALES = [1e-3, 5e-4, 2.5e-4, 1e-4, 5e-5, 2.5e-5, 1e-5, 5e-6, 2.5e-6, 1e-6];  // sec/div
+  VERTICAL_SCALES = [100, 50, 25, 10, 5, 2.5, 1, 0.5, 0.25, 0.1];  // V/div
 
-Oscilloscope.prototype = {
+  INITIAL_HORIZONTAL_SCALE = 1e-5;
+  INITIAL_VERTICAL_SCALE = 5;
 
-  N_CHANNELS:     2,
-  PROBE_CHANNEL:  [1, 2],
-
-  HORIZONTAL_SCALES: [1e-3, 5e-4, 2.5e-4, 1e-4, 5e-5, 2.5e-5, 1e-5, 5e-6, 2.5e-6, 1e-6],  // sec/div
-  VERTICAL_SCALES:   [100,  50,   25,     10,   5,    2.5,    1,    0.5,  0.25,    0.1],  // V/div
-
-  INITIAL_HORIZONTAL_SCALE: 1e-5,
-  INITIAL_VERTICAL_SCALE:   5,
-
-  reset: function() {
-    this.probeLocation[0] = "left_positive21";      // yellow probe
-    this.probeLocation[1] = null;                   // pink probe
+  constructor(breadboardController) {
+    this.breadboardController = breadboardController;
+    this.probeLocation = [];
+    this.probeLocation[0] = null;     // pink probe
+    this.probeLocation[1] = null;     // yellow probe
+    this.view = null;
     this.signals = [];
-    var initVerticalScale   = this.INITIAL_VERTICAL_SCALE,
-        initHorizontalScale = this.INITIAL_HORIZONTAL_SCALE;
+    var initVerticalScale = this.INITIAL_VERTICAL_SCALE,
+      initHorizontalScale = this.INITIAL_HORIZONTAL_SCALE;
     this._verticalScale = [initVerticalScale, initVerticalScale, initVerticalScale];
     this._horizontalScale = initHorizontalScale;
     this.showAminusB = false;
     this.showAplusB = false;
     this.AminusBwasOn = false;  // whether A-B was turned on during current question
     this.AplusBwasOn = false;
-  },
+  }
 
-  setView: function(view) {
+  reset() {
+    this.probeLocation[0] = "left_positive21";      // yellow probe
+    this.probeLocation[1] = null;                   // pink probe
+    this.signals = [];
+    var initVerticalScale = this.INITIAL_VERTICAL_SCALE,
+      initHorizontalScale = this.INITIAL_HORIZONTAL_SCALE;
+    this._verticalScale = [initVerticalScale, initVerticalScale, initVerticalScale];
+    this._horizontalScale = initHorizontalScale;
+    this.showAminusB = false;
+    this.showAplusB = false;
+    this.AminusBwasOn = false;  // whether A-B was turned on during current question
+    this.AplusBwasOn = false;
+  }
+
+  setView(view) {
     this.view = view;
     this.view.setModel(this);
     this.update();         // we can update view immediately with the source trace
-  },
+  }
 
   // @probe Name of probe being attached. We ignore everything but "red"
   // @location Hole name, like 'a1' or can be null if probe is lifted
-  setProbeLocation: function(probe, location) {
+  setProbeLocation(probe, location) {
     if (probe === "probe_yellow" || probe === "probe_pink") {
       var probeIndex = probe === "probe_yellow" ? 0 : 1;
       if (this.probeLocation[probeIndex] !== location) {
@@ -62,22 +58,22 @@ Oscilloscope.prototype = {
         this.update();
       }
     }
-  },
+  }
 
-  moveProbe: function(oldLoc, newLoc) {
+  moveProbe(oldLoc, newLoc) {
     for (var i = 0; i < 2; i++) {
       if (this.probeLocation[i] === oldLoc) {
         this.probeLocation[i] = newLoc;
       }
     }
     this.update();
-  },
+  }
 
-  update: function() {
-    var source     = this.breadboardController.getComponents().source,
-        probeIndex,
-        sourceSignal,
-        probeNode;
+  update() {
+    var source = this.breadboardController.getComponents().source,
+      probeIndex,
+      sourceSignal,
+      probeNode;
 
     if (!source || !source.frequency || !source.amplitude) {
       return;                                     // we must have a source with a freq and an amplitude
@@ -88,7 +84,7 @@ Oscilloscope.prototype = {
         probeNode = this.breadboardController.getHole(this.probeLocation[probeIndex]).nodeName();
         if (probeNode === 'gnd') {
           // short-circuit this operation and just return a flat trace
-          this.setSignal(this.PROBE_CHANNEL[probeIndex], {amplitude: 0, frequency: 0, phase: 0});
+          this.setSignal(this.PROBE_CHANNEL[probeIndex], { amplitude: 0, frequency: 0, phase: 0 });
           continue;
         } else if (~probeNode.indexOf('powerPos')) {
           // just return the source
@@ -105,15 +101,14 @@ Oscilloscope.prototype = {
         this.clearSignal(this.PROBE_CHANNEL[probeIndex]);
       }
     }
-  },
+  }
 
-  updateWithData: function(ciso, probeInfo) {
-
-    var source     = this.breadboardController.getComponents().source,
-        probeNode  = probeInfo[0],
-        probeIndex = probeInfo[1],
-        result,
-        probeSignal;
+  updateWithData(ciso, probeInfo) {
+    var source = this.breadboardController.getComponents().source,
+      probeNode = probeInfo[0],
+      probeIndex = probeInfo[1],
+      result,
+      probeSignal;
 
     result = ciso.getVoltageAt(probeInfo[0]);
 
@@ -121,58 +116,58 @@ Oscilloscope.prototype = {
       probeSignal = {
         amplitude: result.magnitude * source.amplitudeScaleFactor,
         frequency: source.frequency,
-        phase:     result.angle
+        phase: result.angle
       };
 
       this.setSignal(this.PROBE_CHANNEL[probeIndex], probeSignal);
 
       logController.addEvent(LogEvent.OSCOPE_MEASUREMENT, {
-          "probe": probeNode
-        });
+        "probe": probeNode
+      });
     } else {
       this.clearSignal(this.PROBE_CHANNEL[probeIndex]);
     }
-  },
+  }
 
-  setSignal: function(channel, signal) {
+  setSignal(channel, signal) {
     if (!this.view) return;
     this.signals[channel] = signal;
     this.view.renderSignal(channel);
-  },
+  }
 
-  getSignal: function(channel) {
+  getSignal(channel) {
     return this.signals[channel];
-  },
+  }
 
-  clearSignal: function(channel) {
+  clearSignal(channel) {
     delete this.signals[channel];
     if (this.view) {
       this.view.removeTrace(channel);
     }
-  },
+  }
 
-  setHorizontalScale: function(scale) {
+  setHorizontalScale(scale) {
     this._horizontalScale = scale;
     if (this.view) {
       this.view.horizontalScaleChanged();
     }
 
     logController.addEvent(LogEvent.OSCOPE_T_SCALE_CHANGED, {
-        "scale": scale,
-        "goodnessOfScale": this.getGoodnessOfScale()
-      });
-  },
+      "scale": scale,
+      "goodnessOfScale": this.getGoodnessOfScale()
+    });
+  }
 
-  getHorizontalScale: function() {
+  getHorizontalScale() {
     if (!this._horizontalScale) {
       // if you want to randomize the scales, hook something in here
       this.setHorizontalScale(this.INITIAL_HORIZONTAL_SCALE);
     }
     return this._horizontalScale;
-  },
+  }
 
-  setVerticalScale: function(channel, scale) {
-    if (this.showAminusB || this.showAplusB){
+  setVerticalScale(channel, scale) {
+    if (this.showAminusB || this.showAplusB) {
       if (channel === 1) {
         this._verticalScale[2] = scale;
       } else {
@@ -191,66 +186,66 @@ Oscilloscope.prototype = {
       "scale": scale,
       "goodnessOfScale": this.getGoodnessOfScale()
     });
-  },
+  }
 
-  getVerticalScale: function(channel) {
+  getVerticalScale(channel) {
     if (!this._verticalScale[channel]) {
       // if you want to randomize the scales, hook something in here
       this.setVerticalScale(channel, this.INITIAL_VERTICAL_SCALE);
     }
     return this._verticalScale[channel];
-  },
+  }
 
-  bumpHorizontalScale: function(direction) {
+  bumpHorizontalScale(direction) {
     var currentScale = this.getHorizontalScale(),
-        newScale     = this._getNextScaleFromList(currentScale, this.HORIZONTAL_SCALES, direction);
+      newScale = this._getNextScaleFromList(currentScale, this.HORIZONTAL_SCALES, direction);
 
     if (newScale !== currentScale) {
       this.setHorizontalScale(newScale);
     }
-  },
+  }
 
-  bumpVerticalScale: function(channel, direction) {
+  bumpVerticalScale(channel, direction) {
     var currentScale = this.getVerticalScale(channel),
-        newScale     = this._getNextScaleFromList(currentScale, this.VERTICAL_SCALES, direction);
+      newScale = this._getNextScaleFromList(currentScale, this.VERTICAL_SCALES, direction);
 
     if (newScale !== currentScale) {
       this.setVerticalScale(channel, newScale);
     }
-  },
+  }
 
-  toggleShowAminusB: function() {
+  toggleShowAminusB() {
     this.showAminusB = !this.showAminusB;
     if (this.showAminusB) {
       this.AminusBwasOn = true;
       this.showAplusB = false;
       this.setVerticalScale(1, this._verticalScale[1]);
     }
-  },
+  }
 
-  toggleShowAplusB: function() {
+  toggleShowAplusB() {
     this.showAplusB = !this.showAplusB;
     if (this.showAplusB) {
       this.AplusBwasOn = true;
       this.showAminusB = false;
       this.setVerticalScale(1, this._verticalScale[1]);
     }
-  },
+  }
 
   /**
     if A-B or A+B is off right now, set AminusBwasOn and/or
     AplusBwasOn to false now.
   */
-  resetABforQuestion: function() {
+  resetABforQuestion() {
     if (!this.showAminusB) {
       this.AminusBwasOn = false;
     }
     if (!this.showAplusB) {
       this.AplusBwasOn = false;
     }
-  },
+  }
 
-  _getNextScaleFromList: function(scale, scales, direction) {
+  _getNextScaleFromList(scale, scales, direction) {
     var i, len, prevIndex;
 
     for (i = 0, len = scales.length; i < len; i++) {
@@ -267,7 +262,7 @@ Oscilloscope.prototype = {
     } else {
       return scale;
     }
-  },
+  }
 
   // returns how "good" the current scale is, from 0-1.
   // For a single trace, a perfect scale is 1 full wave across the screen and an amplitude
@@ -278,22 +273,22 @@ Oscilloscope.prototype = {
   // of the two with the lower value weighted three times as much.
   // If there are two traces showing, this will return the lower of the two values.
   //
-  getGoodnessOfScale: function() {
+  getGoodnessOfScale() {
     var self = this,
 
-        goodnessOfScale = function(channel) {
-          var timeScale  = self.signals[channel].frequency * (self._horizontalScale * 10),            // 0-inf, best is 1
-              ampScale   = (self.signals[channel].amplitude * 2) / (self._verticalScale[channel] * 8),
-              timeGoodness  = timeScale > 1 ? 1/timeScale : timeScale,                                // 0-1, best is 1
-              ampGoodness   = ampScale > 1 ? 1/ampScale : ampScale,
-              timeScore  = (timeGoodness - 0.3) / 0.5,                                                // scaled such that 0.3 = 0 and 0.8 = 1
-              ampScore   = (ampGoodness - 0.3) / 0.5,
-              minScore = Math.max(0,Math.min(timeScore, ampScore, 1)),                                // smallest of the two, no less than 0
-              maxScore = Math.min(1,Math.max(timeScore, ampScore, 0));                                // largest of the two, no greater than 1
-          return ((minScore * 3) + maxScore) / 4;
-        },
+      goodnessOfScale = function (channel) {
+        var timeScale = self.signals[channel].frequency * (self._horizontalScale * 10),            // 0-inf, best is 1
+          ampScale = (self.signals[channel].amplitude * 2) / (self._verticalScale[channel] * 8),
+          timeGoodness = timeScale > 1 ? 1 / timeScale : timeScale,                                // 0-1, best is 1
+          ampGoodness = ampScale > 1 ? 1 / ampScale : ampScale,
+          timeScore = (timeGoodness - 0.3) / 0.5,                                                // scaled such that 0.3 = 0 and 0.8 = 1
+          ampScore = (ampGoodness - 0.3) / 0.5,
+          minScore = Math.max(0, Math.min(timeScore, ampScore, 1)),                                // smallest of the two, no less than 0
+          maxScore = Math.min(1, Math.max(timeScore, ampScore, 0));                                // largest of the two, no greater than 1
+        return ((minScore * 3) + maxScore) / 4;
+      },
 
-        goodnesses = [null, null];
+      goodnesses = [null, null];
 
     if (this.signals[1]) {
       goodnesses[0] = goodnessOfScale([1]);
@@ -304,7 +299,6 @@ Oscilloscope.prototype = {
     }
     return goodnesses;
   }
-
-};
+}
 
 module.exports = Oscilloscope;

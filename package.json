@@ -15,14 +15,16 @@
     "release": "./deploy.sh production"
   },
   "devDependencies": {
-    "browserify": "^15.2.0",
-    "combine-css": "0.0.2",
+    "@eslint/js": "^9.4.0",
+    "browserify": "^17.0.0",
+    "combine-css": "^0.0.2",
+    "eslint": "^9.4.0",
+    "globals": "^15.3.0",
     "gulp": "^5.0.0",
     "gulp-concat": "^2.4.3",
     "gulp-minify-css": "^0.3.11",
     "gulp-rename": "^1.2.0",
     "gulp-terser": "^2.1.0",
-    "gulp-uglify": "^3.0.2",
     "require-dir": "^0.3.2",
     "terser": "^5.31.0",
     "through2": "^2.0.3"

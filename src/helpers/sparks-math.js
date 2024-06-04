@@ -1,10 +1,7 @@
 //= require helpers/string
-
-/*globals console sparks */
-
 /* FILE math.js */
 
-str = {};
+let str = {};
 
 str.strip = function (s) {
     s = s.replace(/\s*([^\s]*)\s*/, '$1');
@@ -26,7 +23,7 @@ str.stripZeros = function (s) {
     return s;
 };
 
-math = {};
+let math = {};
 
 // Return true if number x is 10^z times y where z is an int
 math.equalExceptPowerOfTen = function(x, y) {
@@ -118,8 +115,8 @@ math.roundToSigDigits = function(x, n) {
  };
 
  Math.close = function(num, expected, perc) {
-   var perc = perc || 5,
-        dif = expected * (perc/100);
+   let percentage = perc || 5,
+        dif = expected * (percentage/100);
    return (num >= (expected-dif) && num <= (expected+dif));
  };
 

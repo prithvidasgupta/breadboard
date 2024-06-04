@@ -6,7 +6,7 @@ require('../libs/base64');
 require('../libs/canvg');
 require('./path-data-polyfill'); // SVG API not implemented in major browsers
 
-var breadboardComm      = require('./svg_view_comm');
+const breadboardComm      = require('./svg_view_comm');
 
 window.breadboardSVGView = {
   "options" : {
@@ -949,7 +949,7 @@ window.breadboardSVGView = {
     ctx.beginPath();
 
     var segs = path.getPathData();
-    console.log(segs.length)
+
     for (var i = 0; i < segs.length; i++) {
       var seg = segs[i];
       var c = seg.type;

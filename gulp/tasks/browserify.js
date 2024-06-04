@@ -14,7 +14,7 @@ gulp.task('browserify', function () {
           next(null, file);
         });
     }))
-    .pipe(uglify())
+   // .pipe(uglify())
     .pipe(rename('sparks.js'))
     .pipe(gulp.dest(config.dest));
 });

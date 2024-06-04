@@ -1,10 +1,11 @@
-sound = {};
+let sound = {
+  mute: false
+};
 
-sound.mute = false;
-
-sound.play = function (sound) {
+sound.playSound = function (s) {
+  console.log(s)
   if (!!window.Audio && !sound.mute) {
-    sound.play();
+      s.play();
   }
 }
 

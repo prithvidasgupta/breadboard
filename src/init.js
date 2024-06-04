@@ -2,22 +2,22 @@ require('../bower_components/jquery/jquery');
 require('../lib/jquery/jquery-ui-1.8.24.custom.min');
 require('../lib/jquery/plugins/jquery.event.drag-2.0.min');
 require('../bower_components/jquery-nearest/src/jquery.nearest.min');
-require('../bower_components/circuit-solver/dist/circuitSolver.min');
+require('../bower_components/circuit-solver/dist/circuitSolver');
 
-var workbenchController = require('./controllers/workbench-controller'),
-    sound               = require('./helpers/sound'),
+let workbenchController = require('./controllers/workbench-controller'),
+  sound = require('./helpers/sound'),
 
-    scripts             = document.getElementsByTagName('script'),
-    path                = scripts[scripts.length-1].src.split('?')[0],      // remove any ?query
-    packageRoot         = path.split('/').slice(0, -2).join('/')+'/',
+  scripts = document.getElementsByTagName('script'),
+  path = scripts[scripts.length - 1].src.split('?')[0],      // remove any ?query
+  packageRoot = path.split('/').slice(0, -2).join('/') + '/',
 
-    soundFiles          = {click: packageRoot + "common/sounds/click.ogg"};
+  soundFiles = { click: packageRoot + "common/sounds/click.ogg" };
 
-loadSounds = function () {
-  var soundName, audio;
+function loadSounds() {
+  let soundName, audio;
 
   for (soundName in soundFiles) {
-    if (!!window.Audio) {
+    if (window.Audio) {
       audio = new Audio();
       audio.src = soundFiles[soundName];
       sound[soundName] = audio;
@@ -25,13 +25,13 @@ loadSounds = function () {
   }
 };
 
-$(document).ready(function () {
-    loadSounds();
+$(function () {
+  loadSounds();
 });
 
 var sparks = {};
 
-sparks.createWorkbench = function(props, elId) {
+sparks.createWorkbench = function (props, elId) {
   workbenchController.createWorkbench(props, elId);
 }
 

@@ -1,56 +1,55 @@
-var Oscilloscope          = require('../models/oscilloscope'),
-    Workbench             = require('../models/workbench'),
-    Multimeter            = require('../circuit/multimeter'),
-    logController         = require('./log-controller'),
-    breadboardController  = require('./breadboard-controller');
+/* global sparks*/
 
+const Oscilloscope = require('../models/oscilloscope'),
+  Workbench = require('../models/workbench'),
+  Multimeter = require('../circuit/multimeter'),
+  logController = require('./log-controller'),
+  breadboardController = require('./breadboard-controller');
 
-WorkbenchController = function(){
-  //this.workbenchMap = {}
-  this.workbench = null;    // for now
-  this.breadboardController = breadboardController;
-  this.breadboardController.init(this);
-  this.logController = logController;
-};
+class WorkbenchController {
+  constructor() {
+    this.workbench = null;    // for now
+    this.breadboardController = breadboardController;
+    this.breadboardController.init(this);
+    this.logController = logController;
+  }
 
-WorkbenchController.prototype = {
-
-  createWorkbench: function(props, elId) {
-    var workbench = new Workbench(null, this.breadboardController);
-    this.workbench = workbench;
+  // Method
+  createWorkbench(props, elId) {
+    this.workbench = new Workbench(this.breadboardController);
 
     this.initialProperties = props;
 
-    workbench.circuit = props.circuit;
-    if (workbench.circuit) workbench.circuit.referenceFrequency = props.referenceFrequency;
+    this.workbench.circuit = props.circuit;
+    if (this.workbench.circuit) this.workbench.circuit.referenceFrequency = props.referenceFrequency;
 
-    workbench.faults = props.faults;
+    this.workbench.faults = props.faults;
 
-    workbench.show_multimeter = !(!(props.show_multimeter) || props.show_multimeter === "false");     // may be a string
-    workbench.show_oscilloscope = !(!(props.show_oscilloscope) || props.show_oscilloscope === "false");
-    workbench.allow_move_yellow_probe = !(!(props.allow_move_yellow_probe) || props.allow_move_yellow_probe === "false");
-    workbench.hide_pink_probe = !(!(props.hide_pink_probe) || props.hide_pink_probe === "false");
-    workbench.disable_multimeter_position = props.disable_multimeter_position;
+    this.workbench.show_multimeter = !(!(props.show_multimeter) || props.show_multimeter === "false");     // may be a string
+    this.workbench.show_oscilloscope = !(!(props.show_oscilloscope) || props.show_oscilloscope === "false");
+    this.workbench.allow_move_yellow_probe = !(!(props.allow_move_yellow_probe) || props.allow_move_yellow_probe === "false");
+    this.workbench.hide_pink_probe = !(!(props.hide_pink_probe) || props.hide_pink_probe === "false");
+    this.workbench.disable_multimeter_position = props.disable_multimeter_position;
 
-    workbench.showComponentDrawer = !(!(props.showComponentDrawer) || props.showComponentDrawer === "false");
-    workbench.showComponentEditor = !(!(props.showComponentEditor) || props.showComponentEditor === "false");
+    this.workbench.showComponentDrawer = !(!(props.showComponentDrawer) || props.showComponentDrawer === "false");
+    this.workbench.showComponentEditor = !(!(props.showComponentEditor) || props.showComponentEditor === "false");
 
-    workbench.interface = props.interface || {hideResistorBands: false, hideDMMResult: false};
+    this.workbench.interface = props.interface || { hideResistorBands: false, hideDMMResult: false };
 
-    if (workbench.show_multimeter) {
-      workbench.meter.dmm = new Multimeter(breadboardController);
-      if(workbench.disable_multimeter_position){
-        workbench.meter.dmm.set_disable_multimeter_position(workbench.disable_multimeter_position);
+    if (this.workbench.show_multimeter) {
+      this.workbench.meter.dmm = new Multimeter(breadboardController);
+      if (this.workbench.disable_multimeter_position) {
+        this.workbench.meter.dmm.set_disable_multimeter_position(this.workbench.disable_multimeter_position);
       }
-      workbench.meter.dmm.hideDisplayText = !!workbench.interface.hideDMMResult;
+      this.workbench.meter.dmm.hideDisplayText = !!this.workbench.interface.hideDMMResult;
     } else {
-      workbench.meter.dmm = null;
+      this.workbench.meter.dmm = null;
     }
 
-    if (workbench.show_oscilloscope) {
-      workbench.meter.oscope = new Oscilloscope(breadboardController);
+    if (this.workbench.show_oscilloscope) {
+      this.workbench.meter.oscope = new Oscilloscope(breadboardController);
     } else {
-      workbench.meter.oscope = null;
+      this.workbench.meter.oscope = null;
     }
 
     // this shouldn't be here
@@ -58,56 +57,54 @@ WorkbenchController.prototype = {
 
     this.loadBreadboard();
 
-    workbench.view.layout(elId);
+    this.workbench.view.layout(elId);
 
-    return workbench;
-  },
+    return this.workbench;
+  }
 
-  loadBreadboard: function() {
-    var workbench = this.workbench;
+  loadBreadboard() {
+    let workbench = this.workbench;
 
     breadboardController.clear();
 
-    if (!!workbench.circuit){
+    if (workbench.circuit) {
       breadboardController.createCircuit(workbench.circuit);
     }
 
-    if (!!workbench.faults){
+    if (workbench.faults) {
       breadboardController.addFaults(workbench.faults);
     }
-  },
+  }
 
-  setDMMVisibility: function(visible) {
-    var workbench = this.workbench;
+  setDMMVisibility(visible) {
+    let workbench = this.workbench;
     if (visible) {
       workbench.meter.dmm = new Multimeter(breadboardController);
-      if(workbench.disable_multimeter_position){
+      if (workbench.disable_multimeter_position) {
         workbench.meter.dmm.set_disable_multimeter_position(workbench.disable_multimeter_position);
       }
     } else {
       workbench.meter.dmm = null;
     }
     sparks.activity.view.showDMM(visible);
-  },
+  }
 
-  setOScopeVisibility: function(visible) {
-    var workbench = this.workbench;
+  setOScopeVisibility(visible) {
+    let workbench = this.workbench;
     if (visible) {
       workbench.meter.oscope = new Oscilloscope(breadboardController);
     } else {
       workbench.meter.oscope = null;
     }
     sparks.activity.view.showOScope(visible);
-  },
+  }
 
-  serialize: function() {
-    var json = this.initialProperties;
+  serialize() {
+    let json = this.initialProperties;
     json.circuit = this.breadboardController.serialize();
     return JSON.stringify(json, null, '\t');
   }
+}
 
-};
-
-//var workbenchController = new WorkbenchController();
 
 module.exports = new WorkbenchController();

@@ -1,10 +1,8 @@
-var unit                  = require('./unit');
+// let unit                  = require('./unit');
 
-mathParser = {};
+let mathParser = {};
 
-var p = mathParser;
-
-p.standardizeUnits = function(string) {
+mathParser.standardizeUnits = function(string) {
   string = string.replace(/ohms/gi,"&#x2126;");
   string = string.replace("micro","&#x00b5;");
   string = string.replace("milli","m");

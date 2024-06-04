@@ -1,11 +1,12 @@
-var util = {};
+/* global jQuery $*/
+let util = {};
 
 /**
  * Naive deep-cloning of an object.
  * Doesn't check against infinite recursion.
  */
 util.cloneSimpleObject = function (obj) {
-    var ret, key;
+    let ret, key;
     if (obj instanceof Array) {
         ret = [];
         for (key in obj) {
@@ -27,15 +28,14 @@ util.cloneSimpleObject = function (obj) {
 
 // The "next" function returns a different value each time
 // alternating between the two input values x, y.
-util.Alternator = function (x, y)
-{
+util.Alternator = function (x, y) {
     this.x = x;
     this.y = y;
     this.cnt = 0;
 };
 util.Alternator.prototype =
 {
-    next : function () {
+    next: function () {
         ++this.cnt;
         return this.cnt % 2 == 1 ? this.x : this.y;
     }
@@ -66,15 +66,15 @@ util.serializeForm = function (form) {
         return this.elements ? jQuery.makeArray(this.elements) : this;
     }).filter(function () {
         return this.name &&
-        (this.checked || (/select|textarea/i).test(this.nodeName) ||
-        (/text|hidden|password|search/i).test(this.type));
-    }).each(function (i) {
+            (this.checked || (/select|textarea/i).test(this.nodeName) ||
+                (/text|hidden|password|search/i).test(this.type));
+    }).each(function () {
         var val = jQuery(this).val();
-        if(val === null){
+        if (val === null) {
             return;
         }
 
-        if (jQuery.isArray(val)) {
+        if (Array.isArray(val)) {
             result[this.name] = jQuery.makeArray(val);
         }
         else {
@@ -103,12 +103,12 @@ util.formatDate = function (date) {
     return s;
 };
 
-util.todaysDate = function() {
-  var monthNames = ["January","February","March","April","May","June","July",
-                    "August","September","October","November","December"];
+util.todaysDate = function () {
+    var monthNames = ["January", "February", "March", "April", "May", "June", "July",
+        "August", "September", "October", "November", "December"];
 
-  var now = new Date();
-  return monthNames[now.getMonth()] + " " +  now.getDate() + ", " + now.getFullYear();
+    var now = new Date();
+    return monthNames[now.getMonth()] + " " + now.getDate() + ", " + now.getFullYear();
 }
 
 // Pretty print an object. Mainly intended for debugging JSON objects
@@ -135,26 +135,26 @@ util.prettyPrint = function (obj, indent) {
 };
 
 util.shuffle = function (o) {
-  for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-  return o;
+    for (var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
 };
 
 util.contains = function (array, obj) {
-  var i = array.length;
+    var i = array.length;
     while (i--) {
-       if (array[i] === obj) {
-           return i;
-       }
+        if (array[i] === obj) {
+            return i;
+        }
     }
     return -1;
 };
 
 util.getKeys = function (json) {
-  var keys = [];
-  $.each(json, function(key){
-    keys.push(key);
-  })
-  return keys;
+    var keys = [];
+    $.each(json, function (key) {
+        keys.push(key);
+    })
+    return keys;
 };
 
 // When we define, say, a logaritmic sweep of frequencies, we calculate them on our end
@@ -167,55 +167,55 @@ util.getKeys = function (json) {
 // @array an array of numbers, complex or real
 // @actual the number we want
 // @isComplex whether the numbers in the array are complex or real
-util.getClosestIndex = function(array, actual, isComplex) {
-  var minDiff = Infinity,
-      index;
-  // this could be shortened as a CS exercise, but it takes 0 ms over an array of
-  // 10,000 so it's not really worth it...
-  for (var i = 0, ii = array.length; i < ii; i++){
-    var diff = isComplex ? Math.abs(array[i].real - actual) : Math.abs(array[i] - actual);
-    if (diff < minDiff){
-      minDiff = diff;
-      index = i;
+util.getClosestIndex = function (array, actual, isComplex) {
+    var minDiff = Infinity,
+        index;
+    // this could be shortened as a CS exercise, but it takes 0 ms over an array of
+    // 10,000 so it's not really worth it...
+    for (var i = 0, ii = array.length; i < ii; i++) {
+        var diff = isComplex ? Math.abs(array[i].real - actual) : Math.abs(array[i] - actual);
+        if (diff < minDiff) {
+            minDiff = diff;
+            index = i;
+        }
     }
-  }
-  return index;
+    return index;
 };
 
 // YUI-style inheritance
-util.extend = function(Child, Parent, properties) {
-  var F = function() {};
-  F.prototype = Parent.prototype;
-  Child.prototype = new F();
-  if (properties) {
-      for (var k in properties) {
-          Child.prototype[k] = properties[k];
-      }
-  }
-  Child.prototype.constructor = Child;
-  Child.parentConstructor = Parent;
-  Child.uber = Parent.prototype;
+util.extend = function (Child, Parent, properties) {
+    var F = function () { };
+    F.prototype = Parent.prototype;
+    Child.prototype = new F();
+    if (properties) {
+        for (var k in properties) {
+            Child.prototype[k] = properties[k];
+        }
+    }
+    Child.prototype.constructor = Child;
+    Child.parentConstructor = Parent;
+    Child.uber = Parent.prototype;
 };
 
 module.exports = util;
 
 
-// Shim to add ECMA262-5 Array methods if not supported natively
-if ( !Array.prototype.indexOf ) {
-  Array.prototype.indexOf= function(find, i /*opt*/) {
-      if (i===undefined) i= 0;
-      if (i<0) i+= this.length;
-      if (i<0) i= 0;
-      for (var n= this.length; i<n; i++)
-          if (i in this && this[i]===find)
-              return i;
-      return -1;
-  };
-}
-if ( !Array.prototype.forEach ) {
-  Array.prototype.forEach = function(fn, scope) {
-    for(var i = 0, len = this.length; i < len; ++i) {
-      fn.call(scope, this[i], i, this);
-    }
-  }
-}
+// // Shim to add ECMA262-5 Array methods if not supported natively
+// if (!Array.prototype.indexOf) {
+//     Array.prototype.indexOf = function (find, i /*opt*/) {
+//         if (i === undefined) i = 0;
+//         if (i < 0) i += this.length;
+//         if (i < 0) i = 0;
+//         for (var n = this.length; i < n; i++)
+//             if (i in this && this[i] === find)
+//                 return i;
+//         return -1;
+//     };
+// }
+// if (!Array.prototype.forEach) {
+//     Array.prototype.forEach = function (fn, scope) {
+//         for (var i = 0, len = this.length; i < len; ++i) {
+//             fn.call(scope, this[i], i, this);
+//         }
+//     }
+// }

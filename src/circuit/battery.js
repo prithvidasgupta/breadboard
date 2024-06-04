@@ -1,4 +1,4 @@
-var extend    = require('../helpers/util').extend,
+const extend    = require('../helpers/util').extend,
     Component = require('./component');
 
 Battery = function (props, breadboardController) {
