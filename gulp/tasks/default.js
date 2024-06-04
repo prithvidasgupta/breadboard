@@ -12,4 +12,4 @@ gulp.task('build', gulp.series('copy-resources', 'browserify', 'minify-css'));
 gulp.task('build-gh-pages', gulp.series('build', 'copy-examples', 'copy-info'));
 gulp.task('build-production', gulp.series('build', 'copy-info'));
 
-gulp.task('default', gulp.series('build', 'copy-examples'));
+gulp.task('default', gulp.series('build', 'copy-examples', 'watch'));

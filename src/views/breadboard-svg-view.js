@@ -4,6 +4,7 @@
 
 require('../libs/base64');
 require('../libs/canvg');
+require('./path-data-polyfill'); // SVG API not implemented in major browsers
 
 var breadboardComm      = require('./svg_view_comm');
 
@@ -588,7 +589,7 @@ window.breadboardSVGView = {
     });
 
     // delete on mouseout
-    $tooltip.mouseleave(function(){
+    $tooltip.on('mouseleave', function(){
       $tooltip.fadeOut( function() { $(this).remove(); });
     });
   };
@@ -947,20 +948,26 @@ window.breadboardSVGView = {
 
     ctx.beginPath();
 
-    var segs = path.pathSegList;
-    for (var i = 0, len = segs.numberOfItems; i < len; i++) {
-      var seg = segs.getItem(i), c = seg.pathSegTypeAsLetter;
+    var segs = path.getPathData();
+    console.log(segs.length)
+    for (var i = 0; i < segs.length; i++) {
+      var seg = segs[i];
+      var c = seg.type;
       if (c == "M") {
-        ctx.moveTo(seg.x, seg.y);
+        let x,y = seg.values;
+        ctx.moveTo(x, y);
       } else
       if (c == "L") {
-        ctx.lineTo(seg.x, seg.y);
+        let x,y = seg.values;
+        ctx.lineTo(x, y);
       } else
       if (c == "Q") {
-        ctx.quadraticCurveTo(seg.x1, seg.y1, seg.x, seg.y);
+        let x1,y1,x,y = seg.values;
+        ctx.quadraticCurveTo(x1, y1, x, y);
       } else
       if (c == "A") {
-       ctx.arc(seg.x - seg.r1, seg.y, seg.r1, 0, Math.PI * 2, true);
+        let rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y = seg.values
+       ctx.arc(x - rx, y, seg.rx, 0, Math.PI * 2, true);
       } else
       if (c == "Z") {
         ctx.closePath();
