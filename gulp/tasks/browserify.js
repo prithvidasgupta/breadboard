@@ -2,6 +2,7 @@ var gulp        = require('gulp');
 var browserify  = require('browserify');
 var through2    = require('through2');
 var rename      = require('gulp-rename');
+var uglify = require('gulp-terser');
 var config      = require('../config').app;
 
 gulp.task('browserify', function () {
@@ -13,6 +14,7 @@ gulp.task('browserify', function () {
           next(null, file);
         });
     }))
+    .pipe(uglify())
     .pipe(rename('sparks.js'))
     .pipe(gulp.dest(config.dest));
 });

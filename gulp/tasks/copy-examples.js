@@ -5,6 +5,6 @@ var filesToMove = [
     ];
 
 gulp.task('copy-examples', function(){
-  gulp.src(filesToMove, { base: config.base })
+  return gulp.src(filesToMove, { base: config.base })
     .pipe(gulp.dest(config.dest));
 });
