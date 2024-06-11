@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <link href='https://fonts.googleapis.com/css?family=Anonymous+Pro:700' rel='stylesheet' type='text/css'>
+    <link href='css/breadboard.css' rel='stylesheet' type='text/css' />
+    <link href="examples.css" rel="stylesheet" type="text/css" >
+    <script src="js/sparks.js"></script>
+  </head>
+  <body>
+    <h2>Breadboard: Simple DC Circuit Validation</h2>
+
+    <div class="description">
+        <p>
+            This example shows a simple DC circuit with a 9V battery and 3 resistors in series. The purpose is to
+            demonstrate the use of the "Validate" button to validate according to some specified test case. In this case,
+            the voltage across the resistor R3 should be one-third of the battery voltage.<br/><br/>
+            You do need to connect the positive lead to the right holes.
+        </p>
+        <button>Validate</button>
+    </div>
+    
+    <div id="breadboard-wrapper"/>
+
+    <script>
+      sparks.createWorkbench({
+        "showComponentEditor": true,
+        "show_multimeter": true,
+         "allow_move_yellow_probe": "true",
+         "circuit": [
+             {
+                 "type": "battery",
+                 "UID": "source",
+                 "voltage": 9
+             },
+             {
+                 "type": "resistor",
+                 "UID": "r1",
+                 "resistance": "1000",
+                 "connections": "c12,c6",
+                 "label": "R1"
+             },
+             {
+                 "type": "resistor",
+                 "UID": "r2",
+                 "resistance": "1000",
+                 "connections": "b12,b18",
+                 "label": "R2"
+             },
+             {
+                 "type": "resistor",
+                 "UID": "r3",
+                 "resistance": "1000",
+                 "connections": "d18,d24",
+                 "label": "R3"
+             },
+             {
+                 "type": "wire",
+                 "connections": "left_negative19,a24"
+             },
+             {
+                 "type": "wire",
+                 "connections": "left_positive8,a11",
+                 "draggable": true
+             }
+         ],
+      }, "breadboard-wrapper")
+  </script>
+</html>

@@ -1,5 +1,5 @@
-var gulp = require('gulp');
-var config    = require('../config');
+const gulp = require('gulp');
+const config    = require('../config');
 
 gulp.task('watch', function() {
     gulp.watch(config.app.src,  gulp.series('browserify'));
@@ -12,4 +12,4 @@ gulp.task('build', gulp.series('copy-resources', 'browserify', 'minify-css'));
 gulp.task('build-gh-pages', gulp.series('build', 'copy-examples', 'copy-info'));
 gulp.task('build-production', gulp.series('build', 'copy-info'));
 
-gulp.task('default', gulp.series('build', 'copy-examples', 'watch'));
+gulp.task('default', gulp.series('build', 'copy-examples'));

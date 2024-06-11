@@ -15,7 +15,7 @@ class Workbench {
     this.view = new WorkbenchView(this, breadboardController);
   }
   toJSON() {
-    var json = {};
+    let json = {};
     return json;
   }
 }

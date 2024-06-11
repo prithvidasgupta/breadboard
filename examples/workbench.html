@@ -18,7 +18,7 @@
       }
 
       function loadWorkbenchFromJSON(json) {
-        var workbenchDef = JSON.parse(json);
+        let workbenchDef = JSON.parse(json);
         loadWorkbench(workbenchDef);
       }
 
@@ -33,7 +33,7 @@
       }
 
       // load a blank workbench
-      var blankWorkbench = {
+      let blankWorkbench = {
         "showComponentEditor": true,
          "circuit": [
          ],

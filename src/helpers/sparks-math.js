@@ -27,8 +27,8 @@ let math = {};
 
 // Return true if number x is 10^z times y where z is an int
 math.equalExceptPowerOfTen = function(x, y) {
-    var sx = str.stripZerosAndDots(x.toString());
-    var sy = str.stripZerosAndDots(y.toString());
+    let sx = str.stripZerosAndDots(x.toString());
+    let sy = str.stripZerosAndDots(y.toString());
 
     return sx === sy;
 };
@@ -47,8 +47,8 @@ math.equalExceptPowerOfTen = function(x, y) {
      if (x === 0) {
          return 0;
      }
-     var n = 0;
-     var y = x;
+     let n = 0;
+     let y = x;
      if (x < 1) {
          while (y < 1) {
              y *= 10;
@@ -70,7 +70,7 @@ math.roundToSigDigits = function(x, n) {
   if (x === 0) {
     return 0;
   }
-  var order = Math.ceil(Math.log10(x)),
+  let order = Math.ceil(Math.log10(x)),
       factor;
 
   // Divide into 2 cases to get numerically sane results (i.e., no .xxx999999s)

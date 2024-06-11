@@ -20,7 +20,7 @@
       }
 
       function loadWorkbenchFromJSON(json) {
-        var workbenchDef = JSON.parse(json);
+        let workbenchDef = JSON.parse(json);
         loadWorkbench(workbenchDef);
       }
 
@@ -68,7 +68,7 @@
       // *** END METACOG ***
 
       // load an interactive
-      var workbench = {
+      let workbench = {
         "showComponentEditor": true,
         "show_oscilloscope": "true",
          "allow_move_yellow_probe": "true",

@@ -1,6 +1,6 @@
 require('../../lib/apMessageBox');
 
-var LogEvent        = require('../models/log'),
+let LogEvent        = require('../models/log'),
     util            = require('../helpers/util'),
     logController   = require('../controllers/log-controller'),
     extend          = require('../helpers/util').extend,
@@ -53,7 +53,7 @@ extend(Multimeter, MultimeterBase, {
 
   // this is called after update() is called and ciso returns
   updateWithData: function (ciso) {
-    var measurement = this.currentMeasurement,
+    let measurement = this.currentMeasurement,
         source, b, p1, p2, v1, v2, current,
         result;
 
@@ -160,7 +160,7 @@ extend(Multimeter, MultimeterBase, {
   },
 
   _getResultsIndex: function (results) {
-    var i = 0,
+    let i = 0,
         source = this.breadboardController.getComponents().source;
     if (source && source.setFrequency && results.acfrequency){
       i = util.getClosestIndex(results.acfrequency, source.frequency, true);

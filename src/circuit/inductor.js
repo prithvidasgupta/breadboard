@@ -1,35 +1,33 @@
-var extend            = require('../helpers/util').extend,
-    ReactiveComponent = require('./reactive-component');
+const ReactiveComponent = require('./reactive-component');
 
-Inductor = function (props, breadboardController) {
-  Inductor.parentConstructor.call(this, props, breadboardController);
-};
+class Inductor extends ReactiveComponent {
+  componentTypeName = "Inductor";
 
-extend(Inductor, ReactiveComponent, {
+  isEditable = true;
 
-  getInductance: function () {
+  editableProperty = { name: "inductance", units: "H" };
+
+  constructor(props, breadboardController) {
+    super(props, breadboardController)
+  }
+  getInductance() {
     return this.getComponentParameter('inductance', this.inductanceFromImpedance);
-  },
+  }
 
-  inductanceFromImpedance: function (impedance, frequency) {
+  inductanceFromImpedance(impedance, frequency) {
     return impedance / (2 * Math.PI * frequency);
-  },
+  }
 
-  addCiSoComponent: function (ciso) {
-    var inductance = this.getInductance() || 0,
-        nodes       = this.getNodes();
+  addCiSoComponent(ciso) {
+    let inductance = this.getInductance() || 0,
+      nodes = this.getNodes();
     ciso.addComponent(this.UID, "Inductor", inductance, nodes);
-  },
+  }
 
-  componentTypeName: "Inductor",
-
-  isEditable: true,
-
-  editableProperty: {name: "inductance", units: "H"},
-
-  changeEditableValue: function(val) {
+  changeEditableValue(val) {
     this.inductance = val;
   }
-});
+}
+
 
 module.exports = Inductor;

@@ -1,61 +1,98 @@
-Component = function (props, breadboardController) {
+class Component {
+  // used by the component edit view
+  componentTypeName = "Component";
+  // used by the component edit view
+  isEditable = false;
+  // The name and base units of the editable property
+  editableProperty = { name: "", units: "" };
 
-  for (var i in props) {
-    this[i]=props[i];
-  }
 
-  this.breadboardController = breadboardController;
+  constructor(props, breadboardController) {
 
-  if (!this.label){
-    this.label = !!this.UID.split("/")[1] ? this.UID.split("/")[1] : "";
-  }
+    for (let i in props) {
+      this[i] = props[i];
+    }
 
-  if (typeof this.connections === "string") {
-    this.connections = this.connections.replace(/ /g,'').split(",");
-  }
+    this.breadboardController = breadboardController;
 
-  for (i in this.connections) {
-    this.connections[i] = this.breadboardController.getHole(this.connections[i]);
+    if (!this.label) {
+      this.label = !this.UID.split("/")[1] ? this.UID.split("/")[1] : "";
+    }
 
-    if (!!this.breadboardController.getHoles[this.connections[i]]) {
-      this.breadboardController.getHoles[this.connections[i]].connections[this.breadboardController.getHoles[this.connections[i]].connections.length] = this;
+    if (typeof this.connections === "string") {
+      this.connections = this.connections.replace(/ /g, '').split(",");
+    }
+
+    for (let i in this.connections) {
+      this.connections[i] = this.breadboardController.getHole(this.connections[i]);
+
+      if (!this.breadboardController.getHoles[this.connections[i]]) {
+        this.breadboardController.getHoles[this.connections[i]].connections[this.breadboardController.getHoles[this.connections[i]].connections.length] = this;
+      }
+    }
+    this._ensureFloat("resistance");
+    this._ensureFloat("nominalResistance");
+    this._ensureFloat("voltage");
+    this._ensureFloat("capacitance");
+    this._ensureFloat("inductance");
+    this._ensureFloat("impedance");
+    this.draggable = !!this.draggable;
+
+    this.viewArguments = {
+      type: this.type,
+      UID: this.UID,
+      connections: this.getLocation(),
+      draggable: this.draggable
+    };
+
+    if (this.label) {
+      this.viewArguments.label = this.label;
     }
   }
-  this._ensureFloat("resistance");
-  this._ensureFloat("nominalResistance");
-  this._ensureFloat("voltage");
-  this._ensureFloat("capacitance");
-  this._ensureFloat("inductance");
-  this._ensureFloat("impedance");
-  this.draggable = !!this.draggable;
 
-  this.viewArguments = {
-    type: this.type,
-    UID: this.UID,
-    connections: this.getLocation(),
-    draggable: this.draggable
-  };
+  // used by the component edit view. Right now we assume any editable component
+  // has only one single editable property. If we change this assumption, we may
+  // want to set an array of properties
+  //
+  // Returns an array of the possible values this property can take
+  getEditablePropertyValues() { return [0]; }
+  // used by the component edit view. Right now we assume any editable component
+  // has only one single editable property. However, even if we have components with
+  // multiple editable properties, we can keep this API and pass in an array
+  changeEditableValue() { }
 
-  if (this.label) {
-    this.viewArguments.label = this.label;
-  }
-};
-
-Component.prototype = {
-  setViewArguments: function (args) {
-    for (var arg in args) {
-      if (!args.hasOwnProperty(arg)) continue;
+  setViewArguments(args) {
+    for (let arg in args) {
+      if (!Object.hasOwn(args, arg)) continue;
       this.viewArguments[arg] = args[arg];
     }
-  },
+  }
 
-  getViewArguments: function () {
+  getViewArguments() {
     this.viewArguments.connections = this.getLocation(); // update location
     return this.viewArguments;
-  },
+  }
 
-  move: function (connections) {
-    var i, j;
+  move(connections) {
+    for (let i in this.connections) {
+      for (let j in this.connections[i].connections) {
+        if (this.connections[i].connections[j] === this) {
+          this.connections[i].connections = [];
+        }
+      }
+      this.connections[i] = [];
+    }
+    this.connections = [];
+    for (let i in connections) {
+      this.connections[i] = this.breadboardController.getHoles[connections[i]];
+      this.breadboardController.getHoles[connections[i]].connections[this.breadboardController.getHoles[connections[i]].connections.length] = this;
+    }
+
+    this.setViewArguments({ connections: this.getLocation() });
+  }
+
+  destroy() {
+    let i, j;
     for (i in this.connections) {
       for (j in this.connections[i].connections) {
         if (this.connections[i].connections[j] === this) {
@@ -65,61 +102,38 @@ Component.prototype = {
       this.connections[i] = [];
     }
     this.connections = [];
-    for (i in connections){
-      this.connections[i] = this.breadboardController.getHoles[connections[i]];
-      this.breadboardController.getHoles[connections[i]].connections[this.breadboardController.getHoles[connections[i]].connections.length] = this;
-    }
-
-    this.setViewArguments({connections: this.getLocation()});
-  },
-
-  destroy: function (){
-    var i, j;
-    for(i in this.connections){
-      for(j in this.connections[i].connections ){
-        if( this.connections[i].connections[j] === this ){
-          this.connections[i].connections = [];
-        }
-      }
-      this.connections[i] = [];
-    }
-    this.connections = [];
     this.breadboardController.deleteComponentFromMap(this.UID);
-  },
-
-  _ensureFloat: function (val) {
+  }
+  _ensureFloat(val) {
     if (this[val] && typeof this[val] === "string") {
       this[val] = parseFloat(this[val], 10);
     }
-  },
-
-  getNodes: function () {
-    return $.map(this.connections, function (connection) {
+  }
+  getNodes() {
+    return this.connections.map((connection) => {
       return connection.nodeName();
     });
-  },
-
+  }
   // converts connections to string, for flash arguments
-  getLocation: function () {
+  getLocation() {
     return this.connections[0].getName() + "," + this.connections[1].getName();
-  },
-
-  canInsertIntoNetlist: function () {
+  }
+  canInsertIntoNetlist() {
     return true;
-  },
+  }
 
   /**
     hasValidConnections: check that this component has connections that are valid for generating a QUCS netlist.
-
+   
     The only check performed right now is that there be 2 connections, but this validity check could be enhanced
     to check, for example, that the two connections map to different nodes, etc.
   */
-  hasValidConnections: function () {
+  hasValidConnections() {
     return this.connections.length === 2 || (this.type === "powerLead" && this.connections.length === 1);
-  },
+  }
 
-  getRequestedImpedance: function (spec, steps) {
-    var min, max, factor, step, choosableSteps, i, len;
+  getRequestedImpedance(spec, steps) {
+    let min, max, factor, step, choosableSteps, i, len;
 
     if (typeof spec === 'string' || typeof spec === 'number') {
       return spec;
@@ -154,63 +168,40 @@ Component.prototype = {
       } while (step < max);
 
       if (choosableSteps.length > 0) {
-        return choosableSteps[ Math.floor(Math.random() * choosableSteps.length) ];
+        return choosableSteps[Math.floor(Math.random() * choosableSteps.length)];
       }
     }
 
     // if no steps were specified, or none were available between the requested min and max
     return min + Math.random() * (max - min);
-  },
-
-  addThisToFaults: function() {
+  }
+  addThisToFaults() {
     this.breadboardController.addFaultyComponent(this);
-  },
-
-  // used by the component edit view
-  componentTypeName: "Component",
-
-  // used by the component edit view
-  isEditable: false,
-
-  // used by the component edit view. Right now we assume any editable component
-  // has only one single editable property. If we change this assumption, we may
-  // want to set an array of properties
-  //
-  // Returns an array of the possible values this property can take
-  getEditablePropertyValues: function() { return [0]; },
-  // The name and base units of the editable property
-  editableProperty: {name: "", units: ""},
-
-  // used by the component edit view. Right now we assume any editable component
-  // has only one single editable property. However, even if we have components with
-  // multiple editable properties, we can keep this API and pass in an array
-  changeEditableValue: function(val) { },
-
-  serialize: function() {
-    var jsonComp = {
+  }
+  serialize() {
+    let jsonComp = {
       type: this.type,
-      UID:  this.UID
+      UID: this.UID
     };
 
-    if (this.label)             jsonComp.label = this.label;
-    if (this.connections)       jsonComp.connections = this.getLocation();
-    if (this.resistance)        jsonComp.resistance = this.resistance;
+    if (this.label) jsonComp.label = this.label;
+    if (this.connections) jsonComp.connections = this.getLocation();
+    if (this.resistance) jsonComp.resistance = this.resistance;
     if (this.nominalResistance) jsonComp.nominalResistance = this.nominalResistance;
-    if (this.voltage)           jsonComp.voltage = this.voltage;
-    if (this.amplitude)         jsonComp.amplitude = this.amplitude;
-    if (this.frequencies)       jsonComp.frequencies = this.frequencies;
-    if (this.initialFrequency)  jsonComp.initialFrequency = this.initialFrequency;
-    if (this.frequency)         jsonComp.initialFrequency = this.frequency;
-    if (this.capacitance)       jsonComp.capacitance = this.capacitance;
-    if (this.inductance)        jsonComp.inductance = this.inductance;
-    if (this.impedance)         jsonComp.impedance = this.impedance;
-    if (this.draggable)         jsonComp.draggable = this.draggable;
-    if (this.hidden)            jsonComp.hidden = this.hidden;
+    if (this.voltage) jsonComp.voltage = this.voltage;
+    if (this.amplitude) jsonComp.amplitude = this.amplitude;
+    if (this.frequencies) jsonComp.frequencies = this.frequencies;
+    if (this.initialFrequency) jsonComp.initialFrequency = this.initialFrequency;
+    if (this.frequency) jsonComp.initialFrequency = this.frequency;
+    if (this.capacitance) jsonComp.capacitance = this.capacitance;
+    if (this.inductance) jsonComp.inductance = this.inductance;
+    if (this.impedance) jsonComp.impedance = this.impedance;
+    if (this.draggable) jsonComp.draggable = this.draggable;
+    if (this.hidden) jsonComp.hidden = this.hidden;
 
     return jsonComp;
   }
-
-};
+}
 
 module.exports = Component;
 

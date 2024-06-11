@@ -96,7 +96,7 @@ class BreadboardController {
   resetConnections(oldHoleName, newHoleName) {
     for (let i in this.breadboard.components) {
       if (!Object.hasOwn(this.breadboard.components, i)) continue;
-      var comp = this.component(i);
+      let comp = this.component(i);
       for (let j in comp.connections) {
         if (!Object.hasOwn(comp.connections, j)) continue;
         if (!!comp.connections[j] && comp.connections[j].getName() === oldHoleName) {
@@ -115,7 +115,7 @@ class BreadboardController {
       this.addFaultToComponent(fault, this.breadboard.components[fault.component]);
     } else {
       // find out how many components we should be applying this to
-      var count;
+      let count;
       if (fault.count) {
         count = fault.count;
       } else if (fault.max) {
@@ -126,12 +126,12 @@ class BreadboardController {
       // apply fault to valid components 'count' times, with no repitition. No checking is
       // done to see if there are sufficient valid components for this to be possible, so
       // application will hang if authored badly.
-      var componentKeys = util.getKeys(this.breadboard.components);
-      for (var i = 0; i < count; i++) {
-        var randomComponent = null;
+      let componentKeys = util.getKeys(this.breadboard.components);
+      for (let i = 0; i < count; i++) {
+        let randomComponent = null;
         while (randomComponent === null) {
-          var rand = Math.floor(Math.random() * componentKeys.length);
-          var component = this.breadboard.components[componentKeys[rand]];
+          let rand = Math.floor(Math.random() * componentKeys.length);
+          let component = this.breadboard.components[componentKeys[rand]];
           if (!!component.applyFaults && (util.contains(this.breadboard.faultyComponents, component) === -1)) {
             randomComponent = component;
           }
@@ -186,21 +186,23 @@ class BreadboardController {
   insertComponent(kind, properties) {
     // copy props into a new obj, so we don't modify original
     let props = {};
-    $.each(properties, function (key, property) {
-      props[key] = property;
-    });
+
+    for (let key in properties) {
+      props[key] = properties[key];
+    }
 
     props.kind = kind;
 
     // ensure no dupes, using either passed UID or type
     props.UID = this.getUID(props.UID ? props.UID : props.kind);
 
+
     // if uid is source, and no conections are specified, assume we are connecting to rails
     if (props.UID === "source" && !props.connections) {
       props.connections = "left_positive21,left_negative21";
     }
 
-    var newComponent = this.component(props);
+    let newComponent = this.component(props);
 
     // update view
     if (workbenchController.breadboardView) {
@@ -216,15 +218,14 @@ class BreadboardController {
   }
 
   createCircuit(jsonCircuit) {
-    var circuitHasReferenceFrequency = typeof jsonCircuit.referenceFrequency === 'number';
-    var self = this;
-    $.each(jsonCircuit, function (i, spec) {
-      // allow each component spec to override the circuit-wide reference frequency, if author desires.
+    let circuitHasReferenceFrequency = typeof jsonCircuit.referenceFrequency === 'number';
+
+    for (let spec of jsonCircuit) {
       if (circuitHasReferenceFrequency && typeof spec.referenceFrequency === 'undefined') {
         spec.referenceFrequency = jsonCircuit.referenceFrequency;
       }
-      self.insertComponent(spec.type, spec);
-    });
+      this.insertComponent(spec.type, spec);
+    }
 
     this.insertComponent("powerLead", {
       UID: "blackPowerLead",
@@ -233,11 +234,10 @@ class BreadboardController {
     });
   }
 
-  addFaults(jsonFaults) {
-    var self = this;
-    $.each(jsonFaults, function (i, fault) {
-      self.addFault(fault);
-    });
+  addFaults(faults) {
+    for (let fault of faults){
+      this.addFault(fault)
+    }
   }
 
   getResOrderOfMagnitude() {
@@ -249,7 +249,7 @@ class BreadboardController {
   }
 
   checkLocation(comp) {     // ensure that a component's leads aren't too close
-    var minDistance = {
+    let minDistance = {
       resistor: 6,
       inductor: 5,
       capacitor: 3,
@@ -264,13 +264,13 @@ class BreadboardController {
         right_negative: 17
       },
       getCoordinate = function (hole) {      // returns [20, 4] for "a20"
-        var name = hole.name,
+        let name = hole.name,
           split = /(\D*)(.*)/.exec(name),
           row = yValue[split[1]];
         return [split[2] * 1, row];
       },
       leadsAreTooClose = function () {
-        var dx, dy, leadDistance;
+        let dx, dy, leadDistance;
 
         comp.coord = [];
         comp.coord[0] = getCoordinate(comp.connections[0]);
@@ -285,7 +285,7 @@ class BreadboardController {
 
     while (leadsAreTooClose()) {
       leadsWereTooClose = true;
-      var rightLead = comp.coord[0][0] < comp.coord[1][0] ? 0 : 1,
+      let rightLead = comp.coord[0][0] < comp.coord[1][0] ? 0 : 1,
         leftLead = (rightLead - 1) * -1,
         newX, newName;
 
@@ -310,13 +310,13 @@ class BreadboardController {
   }
 
   getUID(_name) {
-    var name = _name.replace(/ /g, "_");      // no spaces in qucs
+    let name = _name.replace(/ /g, "_");      // no spaces in qucs
 
     if (!this.breadboard.components[name]) {
       return name;
     }
 
-    var i = 0;
+    let i = 0;
     while (this.breadboard.components["" + name + i]) {
       i++;
     }
@@ -325,7 +325,7 @@ class BreadboardController {
 
   // clean up these three overlapping functions
   remove(type, connections) {
-    var comp = this.findComponent(type, connections);
+    let comp = this.findComponent(type, connections);
     workbenchController.breadboardView.removeComponent(comp.UID);
     if (comp) {
       comp.destroy();
@@ -333,7 +333,7 @@ class BreadboardController {
   }
 
   removeComponent(comp) {
-    var uid = comp.UID;
+    let uid = comp.UID;
     comp.destroy();
     if (uid && workbenchController.breadboardView) {
       workbenchController.breadboardView.removeComponent(uid);
@@ -389,13 +389,13 @@ class BreadboardController {
     this.breadboard.holeMap = {};
   }
 
-  addRandomResistor(name, location, options) {
-    console.log("WARNING: addRandomResistor is deprecated");
-    var resistor = new Resistor4band(name);
-    resistor.randomize((options | null));
-    this.insert('resistor', location, resistor.getRealValue(), name, resistor.colors);
-    return resistor;
-  }
+  // addRandomResistor(name, location, options) {
+  //   console.warn("WARNING: addRandomResistor is deprecated");
+  //   let resistor = new Resistor4band(name);
+  //   resistor.randomize((options | null));
+  //   this.insert('resistor', location, resistor.getRealValue(), name, resistor.colors);
+  //   return resistor;
+  // }
 
   getComponents() {
     return this.breadboard.components;
@@ -425,7 +425,7 @@ class BreadboardController {
         voltage: 1,
         connections: [connections[0], connections[1]]
       });
-      // var currentProbe = this.component({
+      // let currentProbe = this.component({
       //   UID: 'meter',
       //   kind: 'iprobe',
       //   connections: [connections[1], ghost]});
@@ -488,7 +488,7 @@ class BreadboardController {
 
   // returns an array of serialized components
   serialize() {
-    var circuit = [];
+    let circuit = [];
 
     $.each(this.breadboard.components, function (i, component) {
       circuit.push(component.serialize());

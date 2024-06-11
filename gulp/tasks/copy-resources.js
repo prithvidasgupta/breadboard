@@ -1,5 +1,5 @@
-var gulp        = require('gulp');
-var config      = require('../config').resources;
+const gulp        = require('gulp');
+const config      = require('../config').resources;
 
 gulp.task('copy-common', function(){
   return gulp.src(config.common, { base: './' })

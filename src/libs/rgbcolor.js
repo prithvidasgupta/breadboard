@@ -4,21 +4,20 @@
  * @link   http://www.phpied.com/rgb-color-parser-in-javascript/
  * @license Use it if you like it
  */
-function RGBColor(color_string)
-{
+function RGBColor(color_string) {
     this.ok = false;
 
     // strip any leading #
     if (color_string.charAt(0) == '#') { // remove # if any
-        color_string = color_string.substr(1,6);
+        color_string = color_string.substr(1, 6);
     }
 
-    color_string = color_string.replace(/ /g,'');
+    color_string = color_string.replace(/ /g, '');
     color_string = color_string.toLowerCase();
 
     // before getting into regexps, try simple matches
     // and overwrite the input
-    var simple_colors = {
+    let simple_colors = {
         aliceblue: 'f0f8ff',
         antiquewhite: 'faebd7',
         aqua: '00ffff',
@@ -75,8 +74,8 @@ function RGBColor(color_string)
         greenyellow: 'adff2f',
         honeydew: 'f0fff0',
         hotpink: 'ff69b4',
-        indianred : 'cd5c5c',
-        indigo : '4b0082',
+        indianred: 'cd5c5c',
+        indigo: '4b0082',
         ivory: 'fffff0',
         khaki: 'f0e68c',
         lavender: 'e6e6fa',
@@ -163,7 +162,7 @@ function RGBColor(color_string)
         yellow: 'ffff00',
         yellowgreen: '9acd32'
     };
-    for (var key in simple_colors) {
+    for (let key in simple_colors) {
         if (color_string == key) {
             color_string = simple_colors[key];
         }
@@ -171,11 +170,11 @@ function RGBColor(color_string)
     // emd of simple type-in colors
 
     // array of color definition objects
-    var color_defs = [
+    let color_defs = [
         {
             re: /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/,
             example: ['rgb(123, 234, 45)', 'rgb(255,234,245)'],
-            process: function (bits){
+            process: function (bits) {
                 return [
                     parseInt(bits[1]),
                     parseInt(bits[2]),
@@ -186,7 +185,7 @@ function RGBColor(color_string)
         {
             re: /^(\w{2})(\w{2})(\w{2})$/,
             example: ['#00ff00', '336699'],
-            process: function (bits){
+            process: function (bits) {
                 return [
                     parseInt(bits[1], 16),
                     parseInt(bits[2], 16),
@@ -197,7 +196,7 @@ function RGBColor(color_string)
         {
             re: /^(\w{1})(\w{1})(\w{1})$/,
             example: ['#fb0', 'f0f'],
-            process: function (bits){
+            process: function (bits) {
                 return [
                     parseInt(bits[1] + bits[1], 16),
                     parseInt(bits[2] + bits[2], 16),
@@ -208,12 +207,12 @@ function RGBColor(color_string)
     ];
 
     // search through the definitions to find a match
-    for (var i = 0; i < color_defs.length; i++) {
-        var re = color_defs[i].re;
-        var processor = color_defs[i].process;
-        var bits = re.exec(color_string);
+    for (let i = 0; i < color_defs.length; i++) {
+        let re = color_defs[i].re;
+        let processor = color_defs[i].process;
+        let bits = re.exec(color_string);
         if (bits) {
-            channels = processor(bits);
+            let channels = processor(bits);
             this.r = channels[0];
             this.g = channels[1];
             this.b = channels[2];
@@ -232,9 +231,9 @@ function RGBColor(color_string)
         return 'rgb(' + this.r + ', ' + this.g + ', ' + this.b + ')';
     }
     this.toHex = function () {
-        var r = this.r.toString(16);
-        var g = this.g.toString(16);
-        var b = this.b.toString(16);
+        let r = this.r.toString(16);
+        let g = this.g.toString(16);
+        let b = this.b.toString(16);
         if (r.length == 1) r = '0' + r;
         if (g.length == 1) g = '0' + g;
         if (b.length == 1) b = '0' + b;
@@ -244,41 +243,41 @@ function RGBColor(color_string)
     // help
     this.getHelpXML = function () {
 
-        var examples = new Array();
+        let examples = new Array();
         // add regexps
-        for (var i = 0; i < color_defs.length; i++) {
-            var example = color_defs[i].example;
-            for (var j = 0; j < example.length; j++) {
+        for (let i = 0; i < color_defs.length; i++) {
+            let example = color_defs[i].example;
+            for (let j = 0; j < example.length; j++) {
                 examples[examples.length] = example[j];
             }
         }
         // add type-in colors
-        for (var sc in simple_colors) {
+        for (let sc in simple_colors) {
             examples[examples.length] = sc;
         }
 
-        var xml = document.createElement('ul');
+        let xml = document.createElement('ul');
         xml.setAttribute('id', 'rgbcolor-examples');
-        for (var i = 0; i < examples.length; i++) {
+        for (let i = 0; i < examples.length; i++) {
             try {
-                var list_item = document.createElement('li');
-                var list_color = new RGBColor(examples[i]);
-                var example_div = document.createElement('div');
+                let list_item = document.createElement('li');
+                let list_color = new RGBColor(examples[i]);
+                let example_div = document.createElement('div');
                 example_div.style.cssText =
-                        'margin: 3px; '
-                        + 'border: 1px solid black; '
-                        + 'background:' + list_color.toHex() + '; '
-                        + 'color:' + list_color.toHex()
-                ;
+                    'margin: 3px; '
+                    + 'border: 1px solid black; '
+                    + 'background:' + list_color.toHex() + '; '
+                    + 'color:' + list_color.toHex()
+                    ;
                 example_div.appendChild(document.createTextNode('test'));
-                var list_item_value = document.createTextNode(
+                let list_item_value = document.createTextNode(
                     ' ' + examples[i] + ' -> ' + list_color.toRGB() + ' -> ' + list_color.toHex()
                 );
                 list_item.appendChild(example_div);
                 list_item.appendChild(list_item_value);
                 xml.appendChild(list_item);
 
-            } catch(e){}
+            } catch (e) { console.error(e) }
         }
         return xml;
 

@@ -1,18 +1,13 @@
-var workbenchController;
-
+const workbenchController = require('../controllers/workbench-controller');
 /*
  * Digital Multimeter
  * Base for the Centech DMM
  */
-MultimeterBase = function () {
-};
+class MultimeterBase {
+    modes = { ohmmeter: 0, voltmeter: 1, ammeter: 2 };
 
-MultimeterBase.prototype = {
+    init() {
 
-    modes : { ohmmeter : 0, voltmeter : 1, ammeter : 2 },
-
-    init: function () {
-        workbenchController   = require('../controllers/workbench-controller');
 
         this.mode = this.modes.ohmmeter;
 
@@ -28,41 +23,41 @@ MultimeterBase.prototype = {
         this.powerOn = false;
         this.disabledPositions = [];
         this.hideDisplayText = false;
-    },
+    }
 
     // @probe Either "red" or "black"
     // @location hole name (e.g. 'a1') or null
-    setProbeLocation: function (probe, location) {
-      if (probe === "probe_red") {
-        this.redProbeConnection = location;
-      } else if (probe === "probe_black") {
-        this.blackProbeConnection = location;
-      }
-      this.update();
-    },
+    setProbeLocation(probe, location) {
+        if (probe === "probe_red") {
+            this.redProbeConnection = location;
+        } else if (probe === "probe_black") {
+            this.blackProbeConnection = location;
+        }
+        this.update();
+    }
 
-    moveProbe: function(oldLoc, newLoc) {
-      if (this.redProbeConnection === oldLoc) {
-        this.redProbeConnection = newLoc;
-      }
-      if (this.blackProbeConnection === oldLoc) {
-        this.blackProbeConnection = newLoc;
-      }
-      this.update();
-    },
+    moveProbe(oldLoc, newLoc) {
+        if (this.redProbeConnection === oldLoc) {
+            this.redProbeConnection = newLoc;
+        }
+        if (this.blackProbeConnection === oldLoc) {
+            this.blackProbeConnection = newLoc;
+        }
+        this.update();
+    }
 
-    update : function () {
-    },
+    update() {
+    }
 
-    updateDisplay : function () {
-        var text = '',
+    updateDisplay() {
+        let text = '',
             self = this,
             toSignedDisplayString = function (s, dec) {
-              return self.toDisplayString((self.value < 0 ? '-' : '') + s, dec);
+                return self.toDisplayString((self.value < 0 ? '-' : '') + s, dec);
             },
             prependHV = function (s) {
-              // if there is a leading negative place it in the second position so that both HV and the negative sign will display
-              return s.substr(0, 1) === '-' ? 'h-' + text.substring(2) : 'h' + text.substring(1)
+                // if there is a leading negative place it in the second position so that both HV and the negative sign will display
+                return s.substr(0, 1) === '-' ? 'h-' + text.substring(2) : 'h' + text.substring(1)
             },
             vm, imc, im;
 
@@ -97,7 +92,7 @@ MultimeterBase.prototype = {
                 this.currentUnits = "V";
 
             } else if (this.dialPosition === 'dcv_1000') {
-                 if (this.absoluteValue < 999.95) {
+                if (this.absoluteValue < 999.95) {
                     text = Math.round(this.absoluteValue).toString();
                     text = prependHV(toSignedDisplayString(text, 0));
                 }
@@ -119,9 +114,9 @@ MultimeterBase.prototype = {
 
             } else if (this.dialPosition === 'dcv_200m') {
                 vm = this.absoluteValue * 1000;
-                if (vm < 195){
-                  text = (Math.round(vm * 100) * 0.01).toString();
-                  text = toSignedDisplayString(text, 1);
+                if (vm < 195) {
+                    text = (Math.round(vm * 100) * 0.01).toString();
+                    text = toSignedDisplayString(text, 1);
                 }
                 else {
                     text = ' 1 .   ';
@@ -198,67 +193,67 @@ MultimeterBase.prototype = {
                 this.currentUnits = "kOhms";
             }
             else if (this.dialPosition === 'dca_200mc') {
-              imc = this.absoluteValue * 1000000;
-              if (imc < 195){
-                text = (Math.round(imc * 100) * 0.01).toString();
-                text = toSignedDisplayString(text, 1);
-              }
-              else {
-                  text = ' 1     ';
-              }
-              this.currentUnits = "μA";
+                imc = this.absoluteValue * 1000000;
+                if (imc < 195) {
+                    text = (Math.round(imc * 100) * 0.01).toString();
+                    text = toSignedDisplayString(text, 1);
+                }
+                else {
+                    text = ' 1     ';
+                }
+                this.currentUnits = "μA";
             }
             else if (this.dialPosition === 'dca_2000mc') {
-              imc = this.absoluteValue * 1000000;
-              if (imc < 1950){
-                text = (Math.round(imc * 10) * 0.1).toString();
-                text = toSignedDisplayString(text, 0);
-              }
-              else {
-                  text = ' 1     ';
-              }
-              this.currentUnits = "μA";
+                imc = this.absoluteValue * 1000000;
+                if (imc < 1950) {
+                    text = (Math.round(imc * 10) * 0.1).toString();
+                    text = toSignedDisplayString(text, 0);
+                }
+                else {
+                    text = ' 1     ';
+                }
+                this.currentUnits = "μA";
             }
             else if (this.dialPosition === 'dca_20m') {
-              im = this.absoluteValue * 1000;
-              if (im < 19.5){
-                text = (Math.round(im * 100) * 0.01).toString();
-                text = toSignedDisplayString(text, 2);
-              }
-              else {
-                  text = ' 1     ';
-              }
-              this.currentUnits = "mA";
+                im = this.absoluteValue * 1000;
+                if (im < 19.5) {
+                    text = (Math.round(im * 100) * 0.01).toString();
+                    text = toSignedDisplayString(text, 2);
+                }
+                else {
+                    text = ' 1     ';
+                }
+                this.currentUnits = "mA";
             }
             else if (this.dialPosition === 'dca_200m') {
-              im = this.absoluteValue * 1000;
-              if (im < 195){
-                text = (Math.round(im * 10) * 0.1).toString();
-                text = toSignedDisplayString(text, 1);
-              }
-              else {
-                  text = ' 1     ';
-              }
-              this.currentUnits = "mA";
+                im = this.absoluteValue * 1000;
+                if (im < 195) {
+                    text = (Math.round(im * 10) * 0.1).toString();
+                    text = toSignedDisplayString(text, 1);
+                }
+                else {
+                    text = ' 1     ';
+                }
+                this.currentUnits = "mA";
             }
             else if (this.dialPosition === 'dcv_200m' || this.dialPosition === 'dcv_200' ||
-                    this.dialPosition === 'acv_200' || this.dialPosition === 'p_9v' ||
-                    this.dialPosition === 'dca_200mc' || this.dialPosition === 'dca_200m') {
+                this.dialPosition === 'acv_200' || this.dialPosition === 'p_9v' ||
+                this.dialPosition === 'dca_200mc' || this.dialPosition === 'dca_200m') {
                 text = '  0 0.0';
             }
             else if (this.dialPosition === 'dcv_2000m' || this.dialPosition === 'dca_2000mc' ||
-                    this.dialPosition === 'hfe') {
+                this.dialPosition === 'hfe') {
                 text = '  0 0 0';
             }
             else if (this.dialPosition === 'dcv_20' || this.dialPosition === 'dca_20m' ||
-                    this.dialPosition === 'c_10a') {
+                this.dialPosition === 'c_10a') {
                 text = '  0.0 0';
             }
             else if (this.dialPosition === 'dcv_1000' || this.dialPosition === 'acv_750') {
                 text = 'h 0 0 0';
             }
             else if (this.dialPosition === 'diode') {
-              text = ' 1     ';
+                text = ' 1     ';
             }
             else {
                 text = '       ';
@@ -284,16 +279,16 @@ MultimeterBase.prototype = {
                 text = ' 1     ';
             }
             else if (this.dialPosition === 'dcv_200m' || this.dialPosition === 'dcv_200' ||
-                    this.dialPosition === 'acv_200' || this.dialPosition === 'p_9v' ||
-                    this.dialPosition === 'dca_200mc' || this.dialPosition === 'dca_200m') {
+                this.dialPosition === 'acv_200' || this.dialPosition === 'p_9v' ||
+                this.dialPosition === 'dca_200mc' || this.dialPosition === 'dca_200m') {
                 text = '  0 0.0';
             }
             else if (this.dialPosition === 'dcv_2000m' || this.dialPosition === 'dca_2000mc' ||
-                    this.dialPosition === 'hfe') {
+                this.dialPosition === 'hfe') {
                 text = '  0 0 0';
             }
             else if (this.dialPosition === 'dcv_20' || this.dialPosition === 'dca_20m' ||
-                    this.dialPosition === 'c_10a') {
+                this.dialPosition === 'c_10a') {
                 text = '  0.0 0';
             }
             else if (this.dialPosition === 'dcv_1000' || this.dialPosition === 'acv_750') {
@@ -305,92 +300,91 @@ MultimeterBase.prototype = {
         }
         text = this.disable_multimeter_position(text);
         if (text !== this.displayText) {
-          if (workbenchController.breadboardView) {
-            workbenchController.breadboardView.setDMMText(text);
-          }
-          this.displayText = text;
-          this.currentValue = parseFloat(text.replace(/[^\d\.]/g, ""));
+            if (workbenchController.breadboardView) {
+                workbenchController.breadboardView.setDMMText(text);
+            }
+            this.displayText = text;
+            this.currentValue = parseFloat(text.replace(/[^\d\.]/g, ""));
         }
-    },
-
-
-set_disable_multimeter_position: function (disabled) {
-  this.disabledPositions = disabled.split(',');
-  for(var i=0;i<this.disabledPositions.length;i++){
-  }
-},
-
-
-    disable_multimeter_position : function (displayText) {
-      var i;
-      // how do I pass a variable from the "series" file into here?
-      // something like: sparks.jsonSection.disable_multimeter_position  ??
-
-      // right now this is hard wired to disable R dial positions
-      switch (this.dialPosition)
-      {
-  case 'dcv_20':
-  case 'dcv_200':
-  case 'dcv_1000':
-  case 'dcv_2000m':
-  case 'dcv_200m':
-    for(i=0;i<this.disabledPositions.length;i++){
-      if(this.disabledPositions[i] == 'dcv'){
-        displayText = '-------';
-        break;
-      }
     }
-    break;
-  case 'r_200':
-  case 'r_2000':
-  case 'r_20k':
-  case 'r_200k':
-  case 'r_2000k':
-    for(i=0;i<this.disabledPositions.length;i++){
-      if(this.disabledPositions[i] == 'r'){
-        displayText = '-------';
-        break;
-      }
-    }
-    break;
-  case 'dca_200mc':
-  case 'dca_2000mc':
-  case 'dca_20m':
-  case 'dca_200m':
-    for(i=0;i<this.disabledPositions.length;i++){
-      if(this.disabledPositions[i] == 'dca'){
-        displayText = '-------';
-        break;
-      }
-    }
-    break;
-  case 'acv_750':
-  case 'acv_200':
-    for(i=0;i<this.disabledPositions.length;i++){
-      if(this.disabledPositions[i] == 'acv'){
-        displayText = '-------';
-        break;
-      }
-    }
-    break;
-  case 'diode':
-  case 'hfe':
-  case 'c_10a':
-  case 'p_9v':
-  default:
-      }
-      return displayText;
-    },
 
-    toDisplayString : function (s, dec) {
+
+    set_disable_multimeter_position(disabled) {
+        this.disabledPositions = disabled.split(',');
+        for (let i = 0; i < this.disabledPositions.length; i++) {
+        }
+    }
+
+
+    disable_multimeter_position(displayText) {
+        let i;
+        // how do I pass a variable from the "series" file into here?
+        // something like: sparks.jsonSection.disable_multimeter_position  ??
+
+        // right now this is hard wired to disable R dial positions
+        switch (this.dialPosition) {
+            case 'dcv_20':
+            case 'dcv_200':
+            case 'dcv_1000':
+            case 'dcv_2000m':
+            case 'dcv_200m':
+                for (i = 0; i < this.disabledPositions.length; i++) {
+                    if (this.disabledPositions[i] == 'dcv') {
+                        displayText = '-------';
+                        break;
+                    }
+                }
+                break;
+            case 'r_200':
+            case 'r_2000':
+            case 'r_20k':
+            case 'r_200k':
+            case 'r_2000k':
+                for (i = 0; i < this.disabledPositions.length; i++) {
+                    if (this.disabledPositions[i] == 'r') {
+                        displayText = '-------';
+                        break;
+                    }
+                }
+                break;
+            case 'dca_200mc':
+            case 'dca_2000mc':
+            case 'dca_20m':
+            case 'dca_200m':
+                for (i = 0; i < this.disabledPositions.length; i++) {
+                    if (this.disabledPositions[i] == 'dca') {
+                        displayText = '-------';
+                        break;
+                    }
+                }
+                break;
+            case 'acv_750':
+            case 'acv_200':
+                for (i = 0; i < this.disabledPositions.length; i++) {
+                    if (this.disabledPositions[i] == 'acv') {
+                        displayText = '-------';
+                        break;
+                    }
+                }
+                break;
+            case 'diode':
+            case 'hfe':
+            case 'c_10a':
+            case 'p_9v':
+            default:
+        }
+        return displayText;
+    }
+
+    toDisplayString(s, dec) {
         //console.log('s1=' + s + ' dec=' + dec);
-        var i;
-        var sign = s.charAt(0) === '-' ? s.charAt(0) : ' ';
+        let i;
+        let sign = s.charAt(0) === '-' ? s.charAt(0) : ' ';
         s = s.replace('-', '');
 
         //console.log('s2=' + s);
-        var pointLoc = s.indexOf('.');
-        var decLen = pointLoc == -1 ? 0 : s.substring(pointLoc+1).length;
+        let pointLoc = s.indexOf('.');
+        let decLen = pointLoc == -1 ? 0 : s.substring(pointLoc + 1).length;
         if (decLen === 0) {
             s = s.concat('.');
         }
@@ -406,7 +400,7 @@ set_disable_multimeter_position: function (disabled) {
         //console.log('s4=' + s);
         s = s.replace('.', '');
         //console.log('s5=' + s);
-        var len = s.length;
+        let len = s.length;
         if (len < 4) {
             for (i = 0; i < 3 - len; ++i) {
                 s = '0' + s;
@@ -415,40 +409,40 @@ set_disable_multimeter_position: function (disabled) {
         }
         //console.log('s6=' + s);
 
-        var dot1;
-        var dot2;
+        let dot1;
+        let dot2;
 
         switch (dec) {
-        case 0:
-            dot1 = ' ';
-            dot2 = ' ';
-            break;
-        case 1:
-            dot1 = ' ';
-            dot2 = '.';
-            break;
-        case 2:
-            dot1 = '.';
-            dot2 = ' ';
-            break;
-        default:
-            console.log('ERROR: invalid dec ' + dec);
+            case 0:
+                dot1 = ' ';
+                dot2 = ' ';
+                break;
+            case 1:
+                dot1 = ' ';
+                dot2 = '.';
+                break;
+            case 2:
+                dot1 = '.';
+                dot2 = ' ';
+                break;
+            default:
+                console.log('ERROR: invalid dec ' + dec);
         }
 
         s = sign + s.substring(0, 2) + dot1 + s.charAt(2) + dot2 + s.charAt(3);
         //console.log('s7=' + s);
         return s;
 
-    },
+    }
 
     // Pad 0's to the number text
     // sig: number of significant digits
     // dec: number of digits after decimal points
-    formatDecimalString : function (s, dec) {
+    formatDecimalString(s, dec) {
         //console.log('s=' + s + ' dec=' + dec);
-        var pointLoc = s.indexOf('.');
+        let pointLoc = s.indexOf('.');
         //console.log('pointLoc=' + pointLoc);
-        var decLen = pointLoc == -1 ? 0 : s.substring(pointLoc+1).length;
+        let decLen = pointLoc == -1 ? 0 : s.substring(pointLoc + 1).length;
         //console.log('decLen=' + decLen);
         if (decLen === 0) {
             s = s.concat('.');
@@ -457,17 +451,17 @@ set_disable_multimeter_position: function (disabled) {
             s = s.substring(0, pointLoc + dec + 1);
         }
         else {
-            for (var i = 0; i < dec - decLen; ++i) {
+            for (let i = 0; i < dec - decLen; ++i) {
                 s = s.concat('0');
             }
         }
         //console.log('formatDecimalString: formatted=' + s);
         return s;
-    },
+    }
 
-    getDisplayText : function () {
+    getDisplayText() {
         return this.displayText;
-    },
+    }
 
     /*
      * Return value to be shown under optimal setting.
@@ -475,8 +469,8 @@ set_disable_multimeter_position: function (disabled) {
      *
      * Take three significant digits, four if the first digit is 1.
      */
-    makeDisplayText : function (value) {
-        var text;
+    makeDisplayText(value) {
+        let text;
         if (value < 199.95) {
             text = (Math.round(value * 10) * 0.1).toString();
             text = this.formatDecimalString(text, 1);
@@ -498,18 +492,19 @@ set_disable_multimeter_position: function (disabled) {
             text = 'NaN';
         }
         return parseFloat(text);
-    },
+    }
 
-    allConnected : function () {
+    allConnected() {
         return this.redProbeConnection !== null &&
             this.blackProbeConnection !== null &&
             this.redProbeConnection !== this.blackProbeConnection &&
             (this.redPlugConnection === 'voma_port' &&
-             this.blackPlugConnection === 'common_port' ||
-             this.redPlugConnection === 'common_port' &&
-             this.blackPlugConnection === 'voma_port') &&
+                this.blackPlugConnection === 'common_port' ||
+                this.redPlugConnection === 'common_port' &&
+                this.blackPlugConnection === 'voma_port') &&
             this.powerOn;
     }
-};
+}
+
 
 module.exports = MultimeterBase;

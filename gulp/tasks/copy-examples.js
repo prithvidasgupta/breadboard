@@ -1,6 +1,6 @@
-var gulp        = require('gulp');
-var config      = require('../config').examples;
-var filesToMove = [
+const gulp        = require('gulp');
+const config      = require('../config').examples;
+const filesToMove = [
         config.src
     ];
 

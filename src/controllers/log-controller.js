@@ -36,7 +36,7 @@ class LogController {
   }
 
   numEvents(log, name) {
-    var count = 0;
+    let count = 0;
     $.each(log.events, function (i, evt) {
       if (evt.name == name) {
         count++;
@@ -46,12 +46,12 @@ class LogController {
   }
 
   numUniqueMeasurements(log, type) {
-    var count = 0;
-    var positions = [];
+    let count = 0;
+    let positions = [];
     $.each(log.events, function (i, evt) {
       if (evt.name == LogEvent.DMM_MEASUREMENT) {
         if (evt.value.measurement == type) {
-          var position = evt.value.red_probe + "" + evt.value.black_probe;
+          let position = evt.value.red_probe + "" + evt.value.black_probe;
           if (util.contains(positions, position) === -1) {
             count++;
             positions.push(position);

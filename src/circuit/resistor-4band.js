@@ -1,15 +1,15 @@
-var extend    = require('../helpers/util').extend,
+let extend    = require('../helpers/util').extend,
     Resistor  = require('./resistor'),
     r_values  = require('./r-values');
 
 Resistor4band = function (id, breadboardController) {
-  var superclass = Resistor4band.uber;
+  let superclass = Resistor4band.uber;
   superclass.init.apply(this, [id]);
   this.numBands = 4;
   this.breadboardController = breadboardController;
 
   if (breadboardController.getResOrderOfMagnitude() < 0){
-    var om = this.randInt(0, 3);
+    let om = this.randInt(0, 3);
     breadboardController.setResOrderOfMagnitude(om);
   }
 
@@ -23,10 +23,10 @@ extend(Resistor4band, Resistor, {
 
   randomize: function (options) {
 
-      var value = 0;
+      let value = 0;
       do {
-        var ix = this.randInt(0, 1);
-        var values;
+        let ix = this.randInt(0, 1);
+        let values;
 
         this.tolerance = this.toleranceValues[ix];
 
@@ -40,8 +40,8 @@ extend(Resistor4band, Resistor, {
             values = this.r_values10pct;
         }
 
-        var om = this.breadboardController.getResOrderOfMagnitude();
-        var extra = this.randInt(0, 1);
+        let om = this.breadboardController.getResOrderOfMagnitude();
+        let extra = this.randInt(0, 1);
         om = om + extra;
 
         value = values[this.randInt(0, values.length-1)];
@@ -62,11 +62,11 @@ extend(Resistor4band, Resistor, {
   },
 
   _resistanceIsUnique: function (value) {
-    var components = this.breadboardController.getComponents();
+    let components = this.breadboardController.getComponents();
 
-    for (var i in components){
-      var resistor  = components[i];
-      var resistance = resistor.nominalResistance;
+    for (let i in components){
+      let resistor  = components[i];
+      let resistance = resistor.nominalResistance;
       if (resistance == value){
         return false;
       }
@@ -76,21 +76,21 @@ extend(Resistor4band, Resistor, {
 
   // rvalue: resistance value
   getColors: function (ohms, tolerance) {
-      var s = ohms.toString();
-      var decIx = s.indexOf('.'); // real location of the dot in the string
+      let s = ohms.toString();
+      let decIx = s.indexOf('.'); // real location of the dot in the string
       // virtual location of dot
       // e.g., for "324", decLoc is 3, and for "102000", 6
-      var decLoc = decIx > -1 ? decIx : s.length;
+      let decLoc = decIx > -1 ? decIx : s.length;
 
       s = s.replace('.', '');
-      var len = s.length;
+      let len = s.length;
 
       // Make sure there are at least three significant digits
-      for (var i = 0; i < 2 - len; ++i) {
+      for (let i = 0; i < 2 - len; ++i) {
           s += '0';
       }
 
-      var mult = decLoc > 1 ? decLoc - 2 : 10;
+      let mult = decLoc > 1 ? decLoc - 2 : 10;
 
       return [ this.colorMap[s.charAt(0)],
                this.colorMap[s.charAt(1)],

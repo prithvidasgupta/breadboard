@@ -42,7 +42,7 @@
 
     <script>
         // setup initial JSON in first text area
-        var initialJSON = {
+        let initialJSON = {
             "showComponentEditor": true,
             "show_multimeter": "true",
              "allow_move_yellow_probe": "true",
@@ -94,7 +94,7 @@
       }
 
       document.getElementById("load_button").onclick = function() {
-        var json = document.getElementById("load_textarea").value,
+        let json = document.getElementById("load_textarea").value,
             workbenchDef;
         try {
             workbenchDef = JSON.parse(json);
@@ -110,7 +110,7 @@
       // setup logging to bottom text area
 
       sparks.logController.addListener(function(evt) {
-        var stringEvent = JSON.stringify(evt, null, '\t'),
+        let stringEvent = JSON.stringify(evt, null, '\t'),
             currentLog  = document.getElementById("log_textarea").value;
         if (currentLog) {
             currentLog += ',\n';
@@ -119,7 +119,7 @@
       });
 
       // load a blank workbench
-      var blankWorkbench = {
+      let blankWorkbench = {
         "showComponentEditor": true,
          "circuit": [
          ],

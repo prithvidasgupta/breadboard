@@ -1,6 +1,6 @@
-var gulp        = require('gulp');
-var config      = require('../config');
-var filesToMove = [
+const gulp        = require('gulp');
+const config      = require('../config');
+const filesToMove = [
         './bower.json',
         './license.md',
         './package.json',

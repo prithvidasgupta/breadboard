@@ -18,7 +18,7 @@ class Oscilloscope {
     this.probeLocation[1] = null;     // yellow probe
     this.view = null;
     this.signals = [];
-    var initVerticalScale = this.INITIAL_VERTICAL_SCALE,
+    let initVerticalScale = this.INITIAL_VERTICAL_SCALE,
       initHorizontalScale = this.INITIAL_HORIZONTAL_SCALE;
     this._verticalScale = [initVerticalScale, initVerticalScale, initVerticalScale];
     this._horizontalScale = initHorizontalScale;
@@ -32,7 +32,7 @@ class Oscilloscope {
     this.probeLocation[0] = "left_positive21";      // yellow probe
     this.probeLocation[1] = null;                   // pink probe
     this.signals = [];
-    var initVerticalScale = this.INITIAL_VERTICAL_SCALE,
+    let initVerticalScale = this.INITIAL_VERTICAL_SCALE,
       initHorizontalScale = this.INITIAL_HORIZONTAL_SCALE;
     this._verticalScale = [initVerticalScale, initVerticalScale, initVerticalScale];
     this._horizontalScale = initHorizontalScale;
@@ -52,7 +52,7 @@ class Oscilloscope {
   // @location Hole name, like 'a1' or can be null if probe is lifted
   setProbeLocation(probe, location) {
     if (probe === "probe_yellow" || probe === "probe_pink") {
-      var probeIndex = probe === "probe_yellow" ? 0 : 1;
+      let probeIndex = probe === "probe_yellow" ? 0 : 1;
       if (this.probeLocation[probeIndex] !== location) {
         this.probeLocation[probeIndex] = location;
         this.update();
@@ -61,7 +61,7 @@ class Oscilloscope {
   }
 
   moveProbe(oldLoc, newLoc) {
-    for (var i = 0; i < 2; i++) {
+    for (let i = 0; i < 2; i++) {
       if (this.probeLocation[i] === oldLoc) {
         this.probeLocation[i] = newLoc;
       }
@@ -70,7 +70,7 @@ class Oscilloscope {
   }
 
   update() {
-    var source = this.breadboardController.getComponents().source,
+    let source = this.breadboardController.getComponents().source,
       probeIndex,
       sourceSignal,
       probeNode;
@@ -104,7 +104,7 @@ class Oscilloscope {
   }
 
   updateWithData(ciso, probeInfo) {
-    var source = this.breadboardController.getComponents().source,
+    let source = this.breadboardController.getComponents().source,
       probeNode = probeInfo[0],
       probeIndex = probeInfo[1],
       result,
@@ -181,7 +181,7 @@ class Oscilloscope {
       this.view.verticalScaleChanged(2);
     }
 
-    var logEvent = channel == 1 ? LogEvent.OSCOPE_V1_SCALE_CHANGED : LogEvent.OSCOPE_V2_SCALE_CHANGED;
+    let logEvent = channel == 1 ? LogEvent.OSCOPE_V1_SCALE_CHANGED : LogEvent.OSCOPE_V2_SCALE_CHANGED;
     logController.addEvent(logEvent, {
       "scale": scale,
       "goodnessOfScale": this.getGoodnessOfScale()
@@ -197,7 +197,7 @@ class Oscilloscope {
   }
 
   bumpHorizontalScale(direction) {
-    var currentScale = this.getHorizontalScale(),
+    let currentScale = this.getHorizontalScale(),
       newScale = this._getNextScaleFromList(currentScale, this.HORIZONTAL_SCALES, direction);
 
     if (newScale !== currentScale) {
@@ -206,7 +206,7 @@ class Oscilloscope {
   }
 
   bumpVerticalScale(channel, direction) {
-    var currentScale = this.getVerticalScale(channel),
+    let currentScale = this.getVerticalScale(channel),
       newScale = this._getNextScaleFromList(currentScale, this.VERTICAL_SCALES, direction);
 
     if (newScale !== currentScale) {
@@ -246,7 +246,7 @@ class Oscilloscope {
   }
 
   _getNextScaleFromList(scale, scales, direction) {
-    var i, len, prevIndex;
+    let i, len, prevIndex;
 
     for (i = 0, len = scales.length; i < len; i++) {
       if (scales[i] < scale) {
@@ -274,10 +274,10 @@ class Oscilloscope {
   // If there are two traces showing, this will return the lower of the two values.
   //
   getGoodnessOfScale() {
-    var self = this,
+    let self = this,
 
       goodnessOfScale = function (channel) {
-        var timeScale = self.signals[channel].frequency * (self._horizontalScale * 10),            // 0-inf, best is 1
+        let timeScale = self.signals[channel].frequency * (self._horizontalScale * 10),            // 0-inf, best is 1
           ampScale = (self.signals[channel].amplitude * 2) / (self._verticalScale[channel] * 8),
           timeGoodness = timeScale > 1 ? 1 / timeScale : timeScale,                                // 0-1, best is 1
           ampGoodness = ampScale > 1 ? 1 / ampScale : ampScale,

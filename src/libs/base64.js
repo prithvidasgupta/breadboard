@@ -12,8 +12,8 @@
 
 (function() {
 
-var base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-var base64DecodeChars = new Array(
+const base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+const base64DecodeChars = new Array(
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
@@ -24,8 +24,8 @@ var base64DecodeChars = new Array(
     41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1);
 
 function base64encode(str) {
-    var out, i, len;
-    var c1, c2, c3;
+    let out, i, len;
+    let c1, c2, c3;
 
     len = str.length;
     i = 0;
@@ -58,8 +58,8 @@ function base64encode(str) {
 }
 
 function base64decode(str) {
-    var c1, c2, c3, c4;
-    var i, len, out;
+    let c1, c2, c3, c4;
+    let i, len, out;
 
     len = str.length;
     i = 0;

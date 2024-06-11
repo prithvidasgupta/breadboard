@@ -1,9 +1,9 @@
-var extend    = require('../helpers/util').extend,
+let extend    = require('../helpers/util').extend,
     Resistor  = require('./resistor'),
     r_values  = require('./r-values');
 
 Resistor5band = function (id) {
-  var superclass = Resistor5band.uber;
+  let superclass = Resistor5band.uber;
   superclass.init.apply(this, [id]);
   this.numBands = 5;
 
@@ -14,8 +14,8 @@ Resistor5band = function (id) {
 extend(Resistor5band, Resistor, {
 
   randomize : function() {
-    var ix = this.randInt(0, 1);
-    var values;
+    let ix = this.randInt(0, 1);
+    let values;
 
     this.tolerance = this.toleranceValues[ix];
     if (this.tolerance == 0.01) {
@@ -33,17 +33,17 @@ extend(Resistor5band, Resistor, {
   },
 
   getColors: function(ohms, tolerance) {
-      var s = ohms.toString();
-      var decIx = s.indexOf('.'); // real location of the dot in the string
+      let s = ohms.toString();
+      let decIx = s.indexOf('.'); // real location of the dot in the string
       // virtual location of dot
       // e.g., for "324", decLoc is 3, and for "102000", 6
-      var decLoc = decIx > -1 ? decIx : s.length;
+      let decLoc = decIx > -1 ? decIx : s.length;
 
       s = s.replace('.', '');
-      var len = s.length;
+      let len = s.length;
 
       // Make sure there are at least three significant digits
-      for (var i = 0; i < 3 - len; ++i) {
+      for (let i = 0; i < 3 - len; ++i) {
           s += '0';
       }
 

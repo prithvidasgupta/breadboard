@@ -1,4 +1,4 @@
-var extend                = require('../helpers/util').extend,
+let extend                = require('../helpers/util').extend,
     Component             = require('./component'),
     r_values              = require('./r-values'),
     Resistor4band         = require('./resistor-4band'),
@@ -7,7 +7,7 @@ var extend                = require('../helpers/util').extend,
 Resistor = function (props, breadboardController) {
   workbenchController   = require('../controllers/workbench-controller');
 
-  var tolerance, steps;
+  let tolerance, steps;
 
   // translate the requested resistance (which may be of the form ["uniform", 10, 100] into a real number
   if (typeof props.resistance !== 'undefined') {
@@ -25,7 +25,7 @@ Resistor = function (props, breadboardController) {
 
   // if we have neither colors nor resistance
   if ((this.resistance === undefined) && !this.colors) {
-    var resistor = new Resistor4band(this.UID, breadboardController);
+    let resistor = new Resistor4band(this.UID, breadboardController);
     resistor.randomize(null);
     this.resistance = resistor.getRealValue();
     this.tolerance = resistor.tolerance;
@@ -118,9 +118,9 @@ extend(Resistor, Component,
     },
 
     calcRealValue: function (nominalValue, tolerance) {
-        var chance = Math.random();
+        let chance = Math.random();
         if (chance > 0.8) {
-            var chance2 = Math.random();
+            let chance2 = Math.random();
             if (chance2 < 0.5) {
                 return nominalValue + nominalValue * (tolerance + Math.random() * tolerance);
             }
@@ -130,7 +130,7 @@ extend(Resistor, Component,
         }
 
         // Multiply 0.9 just to be comfortably within tolerance
-        var realTolerance = tolerance * 0.9;
+        let realTolerance = tolerance * 0.9;
         return nominalValue * this.randFloat(1 - realTolerance, 1 + realTolerance);
     },
 
@@ -143,8 +143,8 @@ extend(Resistor, Component,
     },
 
     randPseudoGaussian: function (n) {
-        var r = 0.0;
-        for (var i = 0; i < n; ++i) {
+        let r = 0.0;
+        for (let i = 0; i < n; ++i) {
             r += Math.random();
         }
         return r / n;
@@ -152,8 +152,8 @@ extend(Resistor, Component,
 
     // Filter resistance values according to the requirements of this resistor
     filter: function (in_values) {
-        var values = [];
-        for (var i = 0; i < in_values.length; ++i) {
+        let values = [];
+        for (let i = 0; i < in_values.length; ++i) {
             if (in_values[i] >= 10.0 && in_values[i] < 2e6) {
                 values.push(in_values[i]);
             }
@@ -162,7 +162,7 @@ extend(Resistor, Component,
     },
 
     getColors4Band: function (ohms, tolerance) {
-        var s = ohms.toString(),
+        let s = ohms.toString(),
             decIx = s.indexOf('.'),
             decLoc = decIx > -1 ? decIx : s.length,
             len, i;
@@ -177,7 +177,7 @@ extend(Resistor, Component,
     },
 
     getColors5Band: function (ohms, tolerance) {
-        var s = ohms.toString(),
+        let s = ohms.toString(),
             decIx = s.indexOf('.'),
             decLoc = decIx > -1 ? decIx : s.length,
             len, i;
@@ -193,7 +193,7 @@ extend(Resistor, Component,
     },
 
     colorToNumber: function (color) {
-      for (var n in this.colorMap) {
+      for (let n in this.colorMap) {
         if (this.colorMap[n] == color) { return parseInt(n,10); }
       }
       // alternate spelling...
@@ -207,8 +207,8 @@ extend(Resistor, Component,
       if (typeof(colors)==="string"){
         colors = colors.split(",");
       }
-      var resistance = this.colorToNumber(colors[0]);
-      for (var i = 1; i < colors.length - 2; i++) {
+      let resistance = this.colorToNumber(colors[0]);
+      for (let i = 1; i < colors.length - 2; i++) {
         resistance = resistance * 10;
         resistance += this.colorToNumber(colors[i]);
       }
@@ -216,7 +216,7 @@ extend(Resistor, Component,
     },
 
     addCiSoComponent: function (ciso) {
-      var resistance  = this.resistance || 0,
+      let resistance  = this.resistance || 0,
           nodes       = this.getNodes();
       ciso.addComponent(this.UID, "Resistor", resistance, nodes);
     },

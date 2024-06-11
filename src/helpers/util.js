@@ -43,10 +43,10 @@ util.Alternator.prototype =
 
 // Return a string representation of time lapsed between start and end
 util.timeLapseStr = function (start, end) {
-    var seconds = Math.floor((end - start) / 1000);
-    var minutes = Math.floor(seconds / 60);
+    let seconds = Math.floor((end - start) / 1000);
+    let minutes = Math.floor(seconds / 60);
     seconds = seconds % 60;
-    var str = seconds + (seconds == 1 ? ' second' : ' seconds');
+    let str = seconds + (seconds == 1 ? ' second' : ' seconds');
     if (minutes > 0) {
         str = minutes + (minutes == 1 ? ' minute ' : ' minutes ') + str;
     }
@@ -61,7 +61,7 @@ makes using the returned object easier.  It could be improved to handle dates an
 numbers perhaps using style classes to tag them as such.
 */
 util.serializeForm = function (form) {
-    var result = {};
+    let result = {};
     form.map(function () {
         return this.elements ? jQuery.makeArray(this.elements) : this;
     }).filter(function () {
@@ -69,7 +69,7 @@ util.serializeForm = function (form) {
             (this.checked || (/select|textarea/i).test(this.nodeName) ||
                 (/text|hidden|password|search/i).test(this.type));
     }).each(function () {
-        var val = jQuery(this).val();
+        let val = jQuery(this).val();
         if (val === null) {
             return;
         }
@@ -93,7 +93,7 @@ util.formatDate = function (date) {
     if (typeof date === 'number') {
         date = new Date(date);
     }
-    var s = fillZero(date.getMonth() + 1) + '/';
+    let s = fillZero(date.getMonth() + 1) + '/';
 
     s += fillZero(date.getDate()) + '/';
     s += String(date.getFullYear()) + ' ';
@@ -104,20 +104,20 @@ util.formatDate = function (date) {
 };
 
 util.todaysDate = function () {
-    var monthNames = ["January", "February", "March", "April", "May", "June", "July",
+    let monthNames = ["January", "February", "March", "April", "May", "June", "July",
         "August", "September", "October", "November", "December"];
 
-    var now = new Date();
+    let now = new Date();
     return monthNames[now.getMonth()] + " " + now.getDate() + ", " + now.getFullYear();
 }
 
 // Pretty print an object. Mainly intended for debugging JSON objects
 util.prettyPrint = function (obj, indent) {
-    var t = '';
+    let t = '';
     if (typeof obj === 'object') {
-        for (var key in obj) {
+        for (let key in obj) {
             if (typeof obj[key] !== 'function') {
-                for (var i = 0; i < indent; ++i) {
+                for (let i = 0; i < indent; ++i) {
                     t += ' ';
                 }
                 t += key + ': ';
@@ -135,12 +135,12 @@ util.prettyPrint = function (obj, indent) {
 };
 
 util.shuffle = function (o) {
-    for (var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    for (let j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
 };
 
 util.contains = function (array, obj) {
-    var i = array.length;
+    let i = array.length;
     while (i--) {
         if (array[i] === obj) {
             return i;
@@ -150,7 +150,7 @@ util.contains = function (array, obj) {
 };
 
 util.getKeys = function (json) {
-    var keys = [];
+    let keys = [];
     $.each(json, function (key) {
         keys.push(key);
     })
@@ -168,12 +168,12 @@ util.getKeys = function (json) {
 // @actual the number we want
 // @isComplex whether the numbers in the array are complex or real
 util.getClosestIndex = function (array, actual, isComplex) {
-    var minDiff = Infinity,
+    let minDiff = Infinity,
         index;
     // this could be shortened as a CS exercise, but it takes 0 ms over an array of
     // 10,000 so it's not really worth it...
-    for (var i = 0, ii = array.length; i < ii; i++) {
-        var diff = isComplex ? Math.abs(array[i].real - actual) : Math.abs(array[i] - actual);
+    for (let i = 0, ii = array.length; i < ii; i++) {
+        let diff = isComplex ? Math.abs(array[i].real - actual) : Math.abs(array[i] - actual);
         if (diff < minDiff) {
             minDiff = diff;
             index = i;
@@ -184,11 +184,11 @@ util.getClosestIndex = function (array, actual, isComplex) {
 
 // YUI-style inheritance
 util.extend = function (Child, Parent, properties) {
-    var F = function () { };
+    let F = function () { };
     F.prototype = Parent.prototype;
     Child.prototype = new F();
     if (properties) {
-        for (var k in properties) {
+        for (let k in properties) {
             Child.prototype[k] = properties[k];
         }
     }
@@ -206,7 +206,7 @@ module.exports = util;
 //         if (i === undefined) i = 0;
 //         if (i < 0) i += this.length;
 //         if (i < 0) i = 0;
-//         for (var n = this.length; i < n; i++)
+//         for (let n = this.length; i < n; i++)
 //             if (i in this && this[i] === find)
 //                 return i;
 //         return -1;
@@ -214,7 +214,7 @@ module.exports = util;
 // }
 // if (!Array.prototype.forEach) {
 //     Array.prototype.forEach = function (fn, scope) {
-//         for (var i = 0, len = this.length; i < len; ++i) {
+//         for (let i = 0, len = this.length; i < len; ++i) {
 //             fn.call(scope, this[i], i, this);
 //         }
 //     }

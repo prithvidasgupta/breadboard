@@ -1,12 +1,12 @@
 let unit = {};
 
-var u = unit;
+let u = unit;
 
 u.labels = { ohms: '\u2126', kilo_ohms: 'k\u2126', mega_ohms: 'M\u2126' };
 
 u.toEngineering = function (value, units) {
   value = Number(value);
-  var isShort = (units.length === 1 || units === "Hz"),
+  let isShort = (units.length === 1 || units === "Hz"),
     prefix = "";
 
   if (value >= 1000000) {
@@ -38,20 +38,20 @@ u.toEngineering = function (value, units) {
 };
 
 u.round = function (num, dec) {
-  var result = Math.round(Math.round(num * Math.pow(10, dec + 2)) / Math.pow(10, 2)) / Math.pow(10, dec);
+  let result = Math.round(Math.round(num * Math.pow(10, dec + 2)) / Math.pow(10, 2)) / Math.pow(10, dec);
   return result;
 };
 
 u.sigFigs = function (n, sig) {
-  var mult = Math.pow(10,
+  let mult = Math.pow(10,
     sig - Math.floor(Math.log(n) / Math.LN10) - 1);
   return Math.round(n * mult) / mult;
 };
 
 // returns true if string is of form "50 ohms" or "0.1V"
 u.isMeasurement = function (string) {
-  var isMeasurementPattern = /^\s?\d+.?\d*\s?\D+\s?$/
-  var matched = string.match(isMeasurementPattern);
+  let isMeasurementPattern = /^\s?\d+.?\d*\s?\D+\s?$/
+  let matched = string.match(isMeasurementPattern);
   return !!matched;
 };
 
@@ -65,21 +65,21 @@ u.convertMeasurement = function (measurement) {
     return measurement
   }
 
-  var numPattern = /\d+\.?\d*/g
-  var nmatched = measurement.match(numPattern);
+  let numPattern = /\d+\.?\d*/g
+  let nmatched = measurement.match(numPattern);
   if (!nmatched) {
     return measurement;
   }
-  var value = nmatched[0];
+  let value = nmatched[0];
 
-  var unitPattern = /(?=\d*.?\d*)[^\d.\s]+/g
-  var umatched = measurement.match(unitPattern);
+  let unitPattern = /(?=\d*.?\d*)[^\d.\s]+/g
+  let umatched = measurement.match(unitPattern);
   if (!umatched) {
     return measurement;
   }
-  var unit = umatched[0];
+  let unit = umatched[0];
 
-  var eng = u.toEngineering(value, unit)
+  let eng = u.toEngineering(value, unit)
   return eng.value + " " + eng.units;
 };
 
@@ -106,7 +106,7 @@ u.ohmCompatible = function (unit) {
 // Return a string with a unit representing the resistance value.
 // value: resistance value in ohms
 u.res_str = function (value) {
-  var vstr, unit, val;
+  let vstr, unit, val;
 
   if (typeof value !== 'number' || isNaN(Number(value))) {
     return 'Invalid Value ' + String(value);
@@ -135,8 +135,8 @@ u.res_str = function (value) {
 };
 
 u.res_unit_str = function (value, mult) {
-  var vstr;
-  var unit = u.labels.ohms;
+  let vstr;
+  let unit = u.labels.ohms;
 
   if (mult === 'k') {
     vstr = String(value / 1000.0);
@@ -191,7 +191,7 @@ u.prefixValues = {
 };
 
 u.parse = function (string) {
-  var value, units, prefix, currPrefix, unit, equivalents, equiv, regex;
+  let value, units, prefix, currPrefix, unit, equivalents, equiv, regex;
 
   string = string.replace(/ /g, '');                    // rm all whitespace
   string = string.replace(/['";:,/?\\]/g, '');         // rm all non-period, non-dash puncutation
@@ -206,7 +206,7 @@ u.parse = function (string) {
   for (unit in this.unitEquivalents) {                // if the unit can be found in the equivalents table, replace
     equivalents = this.unitEquivalents[unit];
     if (equivalents.length > 0) {
-      for (var i = 0, ii = equivalents.length; i < ii; i++) {
+      for (let i = 0, ii = equivalents.length; i < ii; i++) {
         equiv = equivalents[i];
         regex = new RegExp('.*(' + equiv + ')$', 'i');
         let hasUnits = string.match(regex)

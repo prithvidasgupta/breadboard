@@ -19,11 +19,15 @@ class WorkbenchController {
     this.workbench = new Workbench(this.breadboardController);
 
     this.initialProperties = props;
-
     this.workbench.circuit = props.circuit;
-    if (this.workbench.circuit) this.workbench.circuit.referenceFrequency = props.referenceFrequency;
+
+    if (this.workbench.circuit) {
+      this.workbench.circuit.referenceFrequency = props.referenceFrequency;
+    }
 
     this.workbench.faults = props.faults;
+
+    // TODO fix this odd piece of code
 
     this.workbench.show_multimeter = !(!(props.show_multimeter) || props.show_multimeter === "false");     // may be a string
     this.workbench.show_oscilloscope = !(!(props.show_oscilloscope) || props.show_oscilloscope === "false");

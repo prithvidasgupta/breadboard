@@ -1,28 +1,27 @@
-var extend    = require('../helpers/util').extend,
-    Component = require('./component');
+const Component = require('./component');
 
-PowerLead = function (props, breadboardController) {
-  PowerLead.parentConstructor.call(this, props, breadboardController);
-};
+class PowerLead extends Component {
+  constructor(props, breadboardController) {
+    super(props, breadboardController);
+  }
 
-extend(PowerLead, Component, {
-
-  getColor: function () {
-    var location = this.getLocation();
+  getColor() {
+    let location = this.getLocation();
     if (location.indexOf("positive") > -1) {
       return "redPowerWire";
     } else {
       return "blackPowerWire";
     }
-  },
+  }
 
-  getLocation: function () {
-    return this.connections[0].getName() + ",a1";       // Flash coding issue means we need to give this a second argument...
-  },
+  getLocation() {
+    // Flash coding issue means we need to give this a second argument...
+    return this.connections[0].getName() + ",a1";
+  }
 
-  addCiSoComponent: function () { },
+  addCiSoComponent() { }
 
-  getViewArguments: null
-});
+  getViewArguments = null;
+}
 
 module.exports = PowerLead;

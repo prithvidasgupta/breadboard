@@ -1,7 +1,7 @@
-var dest = './dist';
-var src = './src';
-var common = './common';
-var jquery = './lib/jquery/css';
+const dest = './dist';
+const src = './src';
+const common = './common';
+const jquery = './lib/jquery/css';
 
 module.exports = {
   app: {

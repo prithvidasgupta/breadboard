@@ -1,7 +1,7 @@
-var gulp      = require('gulp');
-var concat    = require('gulp-concat');
-var minifyCSS = require('gulp-minify-css');
-var config    = require('../config').css;
+const gulp      = require('gulp');
+const concat    = require('gulp-concat');
+const minifyCSS = require('gulp-minify-css');
+const config    = require('../config').css;
 
 gulp.task('minify-css', function() {
   return gulp.src(config.src)
