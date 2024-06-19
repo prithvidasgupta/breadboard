@@ -3,11 +3,11 @@ const Component = require('./component'),
   logController = require('../controllers/log-controller');
 
 class FunctionGenerator extends Component {
-  defaultFrequencySteps = 100;
-  getViewArguments = null;
 
   constructor(props, breadboardController, workbenchController) {
     super(props, breadboardController);
+    this.defaultFrequencySteps = 100;
+    this.getViewArguments = null;
 
     this.workbenchController = workbenchController;
 

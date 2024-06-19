@@ -19,15 +19,14 @@ class Component {
       this.label = !this.UID.split("/")[1] ? this.UID.split("/")[1] : "";
     }
 
-    if (typeof this.connections === "string") {
+    if (this.connections && typeof this.connections === "string") {
       this.connections = this.connections.replace(/ /g, '').split(",");
     }
 
     for (let i in this.connections) {
       this.connections[i] = this.breadboardController.getHole(this.connections[i]);
-
-      if (!this.breadboardController.getHoles[this.connections[i]]) {
-        this.breadboardController.getHoles[this.connections[i]].connections[this.breadboardController.getHoles[this.connections[i]].connections.length] = this;
+      if (this.connections && !this.breadboardController.getHoles()[this.connections[i].name]) {
+        this.breadboardController.getHoles()[this.connections[i].name].connections[this.breadboardController.getHoles()[this.connections[i].name].connections.length] = this;
       }
     }
     this._ensureFloat("resistance");

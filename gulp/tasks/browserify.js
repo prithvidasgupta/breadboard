@@ -10,7 +10,6 @@ gulp.task('browserify', function () {
     .pipe(through2.obj(function (file, enc, next) {
       browserify({entries: file.path, standalone: "sparks"})
         .bundle(function(err, res){
-          console.log(err)
           file.contents = res;
           next(null, file);
         });

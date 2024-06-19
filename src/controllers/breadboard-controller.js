@@ -65,7 +65,6 @@ class BreadboardController {
 
   getHole(hole) {
     if (!hole) return;
-
     if (hole.name) {
       if (this.breadboard.holeMap[hole.name]) {
         return this.getHole(this.breadboard.holeMap[hole.getName()]);
@@ -235,7 +234,7 @@ class BreadboardController {
   }
 
   addFaults(faults) {
-    for (let fault of faults){
+    for (let fault of faults) {
       this.addFault(fault)
     }
   }

@@ -6,7 +6,7 @@ const workbenchController = require('../controllers/workbench-controller');
 class MultimeterBase {
     modes = { ohmmeter: 0, voltmeter: 1, ammeter: 2 };
 
-    init() {
+    constructor() {
 
 
         this.mode = this.modes.ohmmeter;
@@ -248,9 +248,6 @@ class MultimeterBase {
             else if (this.dialPosition === 'dcv_20' || this.dialPosition === 'dca_20m' ||
                 this.dialPosition === 'c_10a') {
                 text = '  0.0 0';
-            }
-            else if (this.dialPosition === 'dcv_1000' || this.dialPosition === 'acv_750') {
-                text = 'h 0 0 0';
             }
             else if (this.dialPosition === 'diode') {
                 text = ' 1     ';
