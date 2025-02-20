@@ -12,6 +12,7 @@ export class BreadBoard extends LitElement {
       row_size: { type: Number },
       column_size: { type: Number },
       hole_matrix: { type: Array },
+      origin: { type: Object }
     }
   }
 
@@ -22,7 +23,10 @@ export class BreadBoard extends LitElement {
     this.row_size = 5;
     this.column_size = 29;
     this.power_rail = this.column_size;
-    this.hole_matrix = Array(5)
+    this.hole_matrix = Array(5);
+    // the origin should be the top left corner of the breadboard
+    // only positive values are allowed
+    this.origin = { x: 15, y: 15 };
     for (let i = 0; i < this.row_size; i++) {
       this.hole_matrix[i] = Array(60)
     }
@@ -30,7 +34,7 @@ export class BreadBoard extends LitElement {
 
   render() {
     let element = SVG().size('100%', '100%')
-    let x = 0, y = 0;
+    let x = this.origin.x, y = this.origin.y;
     let hc = null;
     let hole_colors = ['#000', '#fff']
     for (let row = 0; row < this.row_size; row++) {
@@ -42,10 +46,10 @@ export class BreadBoard extends LitElement {
         else
           hc = hole_colors[1]
         element.circle(10).fill(hc).move(10 + y, 10 + x);
-        y = (column + 1) * 30
+        y = this.origin.y+(column + 1) * 30
       }
-      x = (row + 1) * 30;
-      y = 0;
+      x = this.origin.x+(row + 1) * 30;
+      y = this.origin.y;
     }
     // blue ground holes
     for (let column = 0; column < this.column_size; column++) {
@@ -58,10 +62,10 @@ export class BreadBoard extends LitElement {
         element.rect(30, 30).fill('#000').move(0 + y, 0 + x);
         element.rect(20, 30).fill('#fae7ac').move(5 + y, 5 + x);
       }
-      y = (column + 1) * 30
+      y = this.origin.y+(column + 1) * 30
     }
     x = x + 30;
-    y = 0;
+    y = this.origin.y;
     // red power holes
     for (let column = 0; column < this.column_size; column++) {
       if ((column + 1) % 5 != 0) {
@@ -73,14 +77,14 @@ export class BreadBoard extends LitElement {
         element.rect(30, 30).fill('#000').move(0 + y, 0 + x);
         element.rect(20, 25).fill('#fae7ac').move(5 + y, x);
       }
-      y = (column + 1) * 30
+      y = this.origin.y+(column + 1) * 30
     }
     let alpha = ['A', 'B', 'C', 'D', 'E', '(-)', '(+)']
     for (let i = 0; i < alpha.length; i++) {
-      element.text(alpha[i]).move(this.column_size * 30 + 5, 5 + i * 30)
+      element.text(alpha[i]).move(this.origin.x+this.column_size * 30 + 5, this.origin.y+5 + i * 30)
     }
     for (let i = 0; i < this.column_size; i++) {
-      element.text(i + 1).move(10 + i * 30, (this.row_size + 2) * 30 + 5)
+      element.text(i + 1).move(this.origin.x+10 + i * 30, this.origin.y+(this.row_size + 2) * 30 + 5)
     }
     return html`${unsafeHTML(element.svg())}`
   }
