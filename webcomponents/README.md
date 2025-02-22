@@ -9,8 +9,15 @@ python -m http.server 8080
 ```
 
 
-Feb 19 2025: Adding an SVG generator component for a breadboard. The size and colors can and should be parameterized.
+Feb 19 2025: 
 
-Feb 20 2025: Added origin to the breadboard so that I can move it around the screen. Origin coordinates should only be positive values.
+-Adding an SVG generator component for a breadboard. The size and colors can and should be parameterized.
 
-Feb 22 2025: Added a Copliot generated code for a form with a Pixi App and a corresponding form as a LitElement
+Feb 20 2025: 
+
+- Added origin to the breadboard so that I can move it around the screen. Origin coordinates should only be positive values.
+
+Feb 22 2025: 
+
+- Added a Copliot generated code for a form with a Pixi App and a corresponding form as a LitElement.
+- Items are draggable and dropabble in the PixiJS app inside the LitElement.
