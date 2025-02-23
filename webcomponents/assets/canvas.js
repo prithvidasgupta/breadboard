@@ -1,10 +1,29 @@
 // Copilot used to generate the code below
 import { html, css, LitElement } from 'https://cdn.jsdelivr.net/gh/lit/dist@2.7.4/core/lit-core.min.js';
 import { Application, Assets, Sprite } from 'https://cdn.skypack.dev/pixi.js';
+import { Resistor, CentralProcessingUnit } from './draggable_component.js';
 
+
+function componentSwitcher(component_str) {
+  switch (component_str) {
+    case 'Resistor':
+      return Resistor;
+    case 'CentralProcessingUnit':
+      return CentralProcessingUnit;
+    default:
+      return Resistor;
+  }
+}
 // SVG source: https://freesvg.org/generic-40-pin-ic-chip-vector-graphics
 // SVG source: https://www.svgrepo.com/svg/121336/resistor
 class CircuitCanvas extends LitElement {
+  static properties = {selectedComponent: {type: String}}
+
+  constructor(){
+    super();
+    this.selectedComponent = Resistor;
+  }
+
   static styles = css`
     .container {
       display: flex;
@@ -44,32 +63,12 @@ class CircuitCanvas extends LitElement {
     this.app.renderer.resize(parent.clientWidth * 1.25, parent.clientHeight);
   }
 
-  async loadTexture(path) {
-    let app = this.app;
-    const testTexture = await Assets.load({
-      src: path,
-      data: {
-        resolution: 4
-      }
-    });
-
-    const sprite = new Sprite(testTexture);
-
-    // line it up as this svg is not centered
-    const bounds = sprite.getLocalBounds();
-    if (path === 'assets/resistor.svg') {
-      sprite.scale.set(0.1);
-    }
-    sprite.pivot.set((bounds.x + bounds.width) / 2, (bounds.y + bounds.height) / 2);
-
-    sprite.position.set(app.screen.width / 2, app.screen.height / 2);
-
-    app.stage.addChild(sprite);
-
-    sprite.eventMode = 'static';
-    sprite.cursor = 'pointer';
-    sprite.parent_data = this;
-    sprite.on('pointerdown', this.onDragStart.bind(this, sprite));
+  async addComponent(component_str) {
+    const ComponentClass = componentSwitcher(component_str);
+    const component = new ComponentClass();
+    const sprite = await component.loadInApplication(this.app);
+    this.app.stage.addChild(sprite);
+    component.hookEvents(this);
   }
 
   onDragMove(event) {
@@ -101,12 +100,6 @@ class CircuitCanvas extends LitElement {
     });
     this.app.renderer.background.color = 0xf0f0f0;
     this.canvasContainer.appendChild(this.app.canvas);
-    for (let path of [
-      'assets/resistor.svg',
-      'assets/cpu.svg',
-    ]) {
-      await this.loadTexture(path);
-    }
     this.app.stage.eventMode = 'static';
     this.app.stage.hitArea = this.app.screen;
     this.app.stage.on('pointerup', this.onDragEnd.bind(this));
@@ -118,22 +111,19 @@ class CircuitCanvas extends LitElement {
     return html`
       <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
       <div class="container">
-        <div class="canvas-container" id="canvasContainer"></div>
-        <div class="form-container">
-          <form>
-            <div class="mb-3">
-              <label class="form-label">Circuit component</label>
-              <select id="parts" name="parts" class="form-select">
-                <option>Resistor</option>
-                <option>Capacitor</option>
-                <option>Inductor</option>
-              </select>
-            </div>
-            <div>
-              <button type="submit" class="btn btn-primary">Add</button>
-            </div>
-          </form>
+      <div class="canvas-container" id="canvasContainer"></div>
+      <div class="form-container">
+        <div class="mb-3">
+          <label class="form-label">Circuit component</label>
+          <select id="parts" name="parts" class="form-select" @change="${(e) => this.selectedComponent = e.target.value}">
+          <option value="Resistor">Resistor</option>
+          <option value="CentralProcessingUnit">Microprocessor</option>
+          </select>
         </div>
+        <div>
+          <button @click="${async()=>await this.addComponent(this.selectedComponent)}" class="btn btn-primary">Add</button>
+        </div>
+      </div>
       </div>
     `;
   }

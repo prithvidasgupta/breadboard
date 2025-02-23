@@ -21,3 +21,8 @@ Feb 22 2025:
 
 - Added a Copliot generated code for a form with a Pixi App and a corresponding form as a LitElement.
 - Items are draggable and dropabble in the PixiJS app inside the LitElement.
+
+Feb 23 2025
+
+- Moved out individual component loading to separate classes.
+- Deleted breadboard.js SVG generator as it was very slow during renders.
