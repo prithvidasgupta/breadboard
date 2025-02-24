@@ -1,5 +1,7 @@
 // Copilot used to generate the code below
 import { html, css, LitElement } from 'https://cdn.jsdelivr.net/gh/lit/dist@2.7.4/core/lit-core.min.js';
+import { when } from 'https://unpkg.com/lit-html@2.7.4/directives/when.js';
+import { unsafeHTML } from 'https://unpkg.com/lit-html@2.7.4/directives/unsafe-html.js';
 import { Application, Assets, Sprite } from 'https://cdn.skypack.dev/pixi.js';
 import { Resistor, CentralProcessingUnit } from './draggable_component.js';
 
@@ -17,7 +19,10 @@ function componentSwitcher(component_str) {
 // SVG source: https://freesvg.org/generic-40-pin-ic-chip-vector-graphics
 // SVG source: https://www.svgrepo.com/svg/121336/resistor
 class CircuitCanvas extends LitElement {
-  static properties = {selectedComponent: {type: String}}
+  static properties = {
+    selectedComponent: {type: String},
+    view_component: {type: String}
+  }
 
   constructor(){
     super();
@@ -25,6 +30,11 @@ class CircuitCanvas extends LitElement {
   }
 
   static styles = css`
+  .parent-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;}
     .container {
       display: flex;
       flex-direction: row;
@@ -45,6 +55,14 @@ class CircuitCanvas extends LitElement {
       width: 30%;
       background-color: #ffffff;
     }
+    .component-details {
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      margin: 1rem;
+      row-gap: 1rem;
+      width: 30%;
+      background-color: #ffffff;}
   `;
 
   connectedCallback() {
@@ -77,11 +95,13 @@ class CircuitCanvas extends LitElement {
     }
   }
 
-  onDragStart(sprite, event) {
+  onDragStart(sprite, component_type, properties, event) {
     this.dragTarget = sprite;
     sprite.alpha = 0.5;
     this.app.stage.on('pointermove', this.onDragMove, this);
+    this.view_component = component_type
   }
+
 
   onDragEnd() {
     if (this.dragTarget) {
@@ -93,6 +113,7 @@ class CircuitCanvas extends LitElement {
 
   async firstUpdated() {
     this.dragTarget = null;
+    this.view_component = null;
     this.app = new Application()
     await this.app.init({
       autoResize: true,
@@ -110,6 +131,7 @@ class CircuitCanvas extends LitElement {
   render() {
     return html`
       <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+      <div class="parent-container">
       <div class="container">
       <div class="canvas-container" id="canvasContainer"></div>
       <div class="form-container">
@@ -125,6 +147,13 @@ class CircuitCanvas extends LitElement {
         </div>
       </div>
       </div>
+      <div class="component-details">
+      ${when(this.view_component, (_) =>{
+        console.log(`<${this.view_component}></${this.view_component}>`)
+        return html`${unsafeHTML(`<${this.view_component}></${this.view_component}>`)}`
+      })}
+      </div>
+      </div>
     `;
   }
 
@@ -134,3 +163,5 @@ class CircuitCanvas extends LitElement {
 }
 
 customElements.define('circuit-canvas', CircuitCanvas);
+customElements.define('resistor-component', Resistor);
+customElements.define('central-processing-unit-component', CentralProcessingUnit);
